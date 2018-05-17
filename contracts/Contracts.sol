@@ -69,7 +69,7 @@ contract Contracts {
         string _contractNum,
         string _description,
         uint _amount
-        ) public returns (bool) 
+        ) public returns (bool)
     {
         Contract storage c = contracts[idx];
         require (msg.sender == c.contractAddress, "Only owner can change");
@@ -82,7 +82,9 @@ contract Contracts {
         return true;
     }
 
-    function getContractCount() public returns (uint) {
-        return contractCount;
+    function buyContract(uint idx) public returns (bool) {
+        Contract storage c = contracts[idx];
+        c.contractAddress = msg.sender;
+        return true;
     }
 }
