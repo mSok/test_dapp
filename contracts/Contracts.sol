@@ -25,6 +25,8 @@ contract Contracts {
 
     constructor () payable {
         Admin = msg.sender;
+        createContract("0001", "первый контракт", 100);
+        createContract("0002", "второй контракт", 300);
     }
     // Create an auction, transfer the item to this contract, activate the auction
     function createContract (
@@ -34,7 +36,8 @@ contract Contracts {
     ) public
         returns (uint contractId) {
         contractCount ++;
-        Contract storage c = contracts[contractId];
+        Contract storage c = contracts[contractCount];
+        c.id = contractCount;
         c.contractNum = _contractNum;
         c.description = _description;
         c.timestamp = now;
@@ -69,7 +72,7 @@ contract Contracts {
         string _contractNum,
         string _description,
         uint _amount
-        ) public returns (bool) 
+        ) public returns (bool)
     {
         Contract storage c = contracts[idx];
         require (msg.sender == c.contractAddress, "Only owner can change");
@@ -82,7 +85,17 @@ contract Contracts {
         return true;
     }
 
-    function getContractCount() public returns (uint) {
-        return contractCount;
+    function buyContract(uint idx) public  payable returns (bool) {
+        Contract storage c = contracts[idx];
+        
+        address payee = msg.sender;
+        uint256 payment = c.amount;
+
+        require(payment != 0);
+        require(address(this).balance >= payment);
+
+        payee.transfer(payment);
+        c.contractAddress = msg.sender;
+        return true;
     }
 }
