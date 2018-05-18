@@ -25,6 +25,8 @@ contract Contracts {
 
     constructor () payable {
         Admin = msg.sender;
+        createContract("0001", "первый контракт", 100);
+        createContract("0002", "второй контракт", 300);
     }
     // Create an auction, transfer the item to this contract, activate the auction
     function createContract (

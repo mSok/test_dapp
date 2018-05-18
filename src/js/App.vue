@@ -1,6 +1,9 @@
 <template>
   <div id="reg" class="wrapper">
-  {{account}}
+    <div>
+        {{account}}
+        {{contractsData}}
+    </div>
   </div>
 </template>
 
@@ -11,15 +14,17 @@ import TruffleContract from 'truffle-contract'
 
 Vue.use(VueResource)
 
-var app = new Vue({
-    data: {
-      message: 'Hello Vue!',
-      web3Provider: null,
-      web3: {},
-      contracts: {},
-      contractsData:[],
-      account: '0x0',
-      hasVoted: false,
+export default {
+    data () {
+        return {
+            message: 'Hello Vue!',
+            web3Provider: null,
+            web3: {},
+            contracts: {},
+            contractsData:[],
+            account: '0x0',
+            hasVoted: false
+        }
     },
     methods: {
         getAccount(){
@@ -35,9 +40,9 @@ var app = new Vue({
             
             let c = this.getContractJSON()
             // Instantiate a new truffle contract from the artifact
-            this.contracts.Contract = TruffleContract(c)
+            this.contracts.Contracts = TruffleContract(c)
             // Connect provider to interact with contract
-            this.contracts.Contract.setProvider(this.web3Provider)
+            this.contracts.Contracts.setProvider(this.web3Provider)
         },
         getContractJSON: function() {
              this.$http.get('/Contracts.json').then(response => {
@@ -49,10 +54,6 @@ var app = new Vue({
             }, response => {
                 console.error('error get json contract')
             });
-        //     Vue.http.get('Contracts.json', function (data) {
-        //     // set data on vm
-        //     this.$set('contractJSON', data)
-        //     })
         },
         initWeb3: function () {
             // TODO: refactor conditional
@@ -63,7 +64,7 @@ var app = new Vue({
             } else {
                 // Specify default instance if no web3 instance provided
                 this.web3Provider = new Web3.providers.HttpProvider('http://localhost:7545');
-                this.web3 = new Web3(App.web3Provider)
+                this.web3 = new Web3(this.web3Provider)
             }
             return this.initContract()
       },
@@ -72,10 +73,14 @@ var app = new Vue({
         this.initWeb3()
 
         // Load contract data
-        this.contracts.Contract.deployed().then(function (instance) {
+        debugger;
+        this.contracts.Contracts.deployed().then(function (instance) {
           contractInstance = instance
           return contractInstance.contractCount()
         }).then(function (contractCount) {
+            console.log('!!!!')
+            console.log(contractCount)
+            
           for (var i = 1; i <= contractCount; i++) {
             contractInstance.contracts(i).then(function (contract) {
               contractsData.push(contract)
@@ -104,5 +109,5 @@ var app = new Vue({
     created(){
       this.fetchData()
     },
-  })
+  }
 </script>

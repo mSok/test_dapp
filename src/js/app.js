@@ -25,9 +25,9 @@ App = {
   initContract: function() {
     $.getJSON('Contracts.json', function(c) {
       // Instantiate a new truffle contract from the artifact
-      App.contracts.Contract = TruffleContract(c)
+      App.contracts.Contracts = TruffleContract(c)
       // Connect provider to interact with contract
-      App.contracts.Contract.setProvider(App.web3Provider)
+      App.contracts.Contracts.setProvider(App.web3Provider)
 
       // App.listenForEvents()
 
@@ -37,7 +37,7 @@ App = {
 
   // Listen for events emitted from the contract
   listenForEvents: function () {
-    App.contracts.Contract.deployed().then(function (instance) {
+    App.contracts.Contracts.deployed().then(function (instance) {
       // Restart Chrome if you are unable to receive this event
       // This is a known issue with Metamask
       // https://github.com/MetaMask/metamask-extension/issues/2393
@@ -57,9 +57,8 @@ App = {
     var loader = $("#loader")
     var content = $("#content")
 
-    loader.show()
-    content.hide()
-
+    // loader.show()
+    // content.hide()
     // Load account data
     web3.eth.getCoinbase(function (err, account) {
       if (err === null) {
@@ -69,8 +68,9 @@ App = {
     });
 
     // Load contract data
-    App.contracts.Contract.deployed().then(function (instance) {
+    App.contracts.Contracts.deployed().then(function (instance) {
       contractInstance = instance
+      debugger;
       return contractInstance.contractCount()
     }).then(function (contractCount) {
       var contractResults = $('#contractResults')
@@ -86,6 +86,7 @@ App = {
 
           // Render candidate Result
           var contractTemplate = "<tr><th>" + id + "</th><td>" + contractNum + "</td><td>" + description + "</td><td>" + timestamp + "</td><td>" + amount + "</td><td>" + contractAddress + "</td></tr>"
+          debugger;
           contractResults.append(contractTemplate)
 
           // Render button
@@ -96,7 +97,7 @@ App = {
           content.show()
         })
       }
-      return contractInstance.voters(App.account)
+      return contractCount
     }).catch(function (error) {
       console.warn(error)
     })
