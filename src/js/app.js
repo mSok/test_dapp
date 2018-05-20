@@ -16,10 +16,10 @@ App = {
       web3 = new Web3(web3.currentProvider);
     } else {
       // Specify default instance if no web3 instance provided
-      App.web3Provider = new Web3.providers.HttpProvider('http://localhost:7545');
-      web3 = new Web3(App.web3Provider);
+      App.web3Provider = new Web3.providers.HttpProvider('http://localhost:8545')
+      web3 = new Web3(App.web3Provider)
     }
-    return App.initContract();
+    return App.initContract()
   },
 
   initContract: function() {
@@ -82,16 +82,25 @@ App = {
                 cdata["descr"],
                 cdata["amount"]
             )
-            document.getElementById("contract-data").reset();
+            document.getElementById("contract-data").reset()
         })
     });
     // Load account data
-    web3.eth.getCoinbase(function(err, account) {
+    web3.eth.getCoinbase(function (err, account) {
       if (err === null) {
         App.account = account;
-        $("#accountAddress").html("Your Account: " + account);
+        $("#accountAddress").html("Your Account: " + account)
       }
     });
+
+    // can be 'latest' or 'pending'
+    // var buy_event = web3.eth.filter('latest');
+    // buy_event.watch((error, result) => {
+    //   if (error) {
+    //       console.log("error", error)
+    //   }
+    //   console.log("Result", result) //result.args holds values, result.args.id, result.args.bookingId and result.args.emailid
+    // })
 
     // Load contract data
     App.contracts.Contracts.deployed().then(function(instance) {
@@ -107,17 +116,17 @@ App = {
           var contractNum = contract[1];
           var description = contract[2];
           var timestamp = new Date(contract[3] * 1000);
-          var amount = contract[4];
+          var amount = contract[4]/1000000;
           var address = contract[5];
 
           // Render candidate Result
-          link = "<a class='buyref' data-id=1 href='#'>Купить</a>"
-          var contractTemplate = "<tr><th>"+ id +"</th><td>" + contractNum + "</td><td>" + description + "</td><td>" + timestamp +" </td><td>" + amount +" </td><td>" +  address +" </td><td>"+ link +"</td></tr>"
+          link = "<a class='buyref' data-id='" + id + "'data-val='" + amount + "' href='#'>Купить</a>"
+          var contractTemplate = "<tr><th>"+ id +"</th><td>" + contractNum + "</td><td>" + description + "</td><td>" + timestamp +" </td><td>" + amount +"eth </td><td>" +  address +" </td><td>"+ link +"</td></tr>"
           contractsResults.append(contractTemplate);
         });
       }
-      $(document).on('click', '.buyref', function () {
-        let ret = contractInstance.buyContract(1)
+      $(document).on('click', '.buyref', function (i) {
+        let ret = contractInstance.buyContract(i.currentTarget.dataset.id, {value: web3.toWei(i.currentTarget.dataset.val, "ether") })
         return true
         });
       return contractInstance;

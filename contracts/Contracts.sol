@@ -23,10 +23,16 @@ contract Contracts {
     mapping(uint => Contract) public contracts;
     uint public contractCount;
 
-    constructor () payable {
+    event on_success_buy (
+        string _contractNum,
+        uint _id
+    );
+
+    constructor () public {
         Admin = msg.sender;
         createContract("0001", "первый контракт", 100);
         createContract("0002", "второй контракт", 300);
+        createContract("0003", "третий контракт", 300);
     }
     // Create an auction, transfer the item to this contract, activate the auction
     function createContract (
@@ -63,9 +69,9 @@ contract Contracts {
         );
     }
 
-    function getContractCount() public returns (uint) {
-        return contractCount;
-    }
+    // function getContractCount() public returns (uint) {
+    //     return contractCount;
+    // }
 
     function updateContract(
         uint idx,
@@ -96,6 +102,7 @@ contract Contracts {
 
         payee.transfer(payment);
         c.contractAddress = msg.sender;
+        emit on_success_buy(c.contractNum, idx);
         return true;
     }
 }
