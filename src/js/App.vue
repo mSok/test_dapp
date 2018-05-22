@@ -1,7 +1,9 @@
 <template>
-  <div id="reg" class="wrapper">
+  <div class="container">
     <div>
         {{account}}
+        {{fullAccount}}
+        <GenerateContract @createContract="onCreateContract"> </GenerateContract>
         <table class="table table-sm">
             <thead class="thead-dark">
                 <tr>
@@ -11,11 +13,10 @@
                     <th scope="col">Дата</th>
                     <th scope="col">Цена</th>
                     <th scope="col">Владелец</th>
-                    <th scope="col"></th>
+                    <th scope="col">Закрыт</th>
                 </tr>
             </thead>
             <tbody>
-                
                 <tr v-for="item in contractsData">
                     <th>{{parseInt(item[0])}}</th>
                     <td>{{item[1]}}</td>
@@ -23,11 +24,10 @@
                     <td>{{new Date(item[3] * 1000).toLocaleDateString("ru-RU", options)}}</td>
                     <td>{{parseInt(item[4])}}</td>
                     <td>{{item[5]}}</td>
+                    <td>{{item[6]}}</td>
                 </tr>
-                
             </tbody>
         </table>
-
     </div>
   </div>
 </template>
@@ -36,6 +36,9 @@
 import Vue from 'vue'
 import VueResource from 'vue-resource'
 import TruffleContract from 'truffle-contract'
+
+import GenerateContract from './GenerateContract.vue'
+Vue.component('GenerateContract', GenerateContract)
 
 Vue.use(VueResource)
 
@@ -48,6 +51,7 @@ export default {
             contracts: {},
             contractsData:[],
             account: '0x0',
+            fullAccount: [],
             hasVoted: false,
             options :{ year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric', second:'numeric' },
 
@@ -59,9 +63,20 @@ export default {
             var self = this
             web3.eth.getCoinbase(function (err, account) {
             if (err === null) {
-                self.account = account;
-            }
+                    self.account = account;
+                }
             });
+        },
+        getFullAccount() {
+            
+        },
+        onCreateContract: function(contract_obj) {
+            console.log(this.web3.eth.accounts)
+            this.contractInstance.createContract(
+                contract_obj["contructnum"],
+                contract_obj["descr"],
+                contract_obj["amount"]
+            )
         },
         initContract: function() {
             return this.getContractJSON().then(function(c){
@@ -98,13 +113,18 @@ export default {
             // Load contract data
             this.contracts.Contracts.deployed().then(instance => {
                 this.contractInstance = instance
+                // Load account email
+                this.contractInstance.accounts(this.account).then(acc => {
+                    this.fullAccount = acc;
+                })
                 return this.contractInstance.contractCount()
             }).then((contractCount)  => {
-                for (var i = 1; i <= contractCount+1; i++) {
+                for (var i = 1; i <= contractCount; i++) {
                     this.contractInstance.contracts(i).then(contract => {
-                        this.contractsData.splice(contract[0], 1, contract)
+                        this.contractsData.push(contract)
                     })
                 }
+                this.contractsData.sort(function(a, b){return a[0]-b[0]});
                 return true
             }).catch(function (error) {
                 console.warn(error)
