@@ -116,7 +116,7 @@ App = {
           var id = contract[0];
           var contractNum = contract[1];
           var description = contract[2];
-          var timestamp = new Date(contract[3] * 1000).toLocaleDateString("ru-RU", options);
+          var timestamp = new Date(contract[3] * 1000).toLocaleDateString("ru-RU", App.options);
           var amount = contract[4]/1000000;
           var address = contract[5];
 
