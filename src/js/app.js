@@ -3,7 +3,7 @@ App = {
   contracts: {},
   account: '0x0',
   hasVoted: false,
-  options = { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric', second:'numeric' },
+  options :{ year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric', second:'numeric' },
 
   init: function() {
     return App.initWeb3();
