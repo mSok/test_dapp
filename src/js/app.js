@@ -3,6 +3,7 @@ App = {
   contracts: {},
   account: '0x0',
   hasVoted: false,
+  options :{ year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric', second:'numeric' },
 
   init: function() {
     return App.initWeb3();
@@ -115,7 +116,7 @@ App = {
           var id = contract[0];
           var contractNum = contract[1];
           var description = contract[2];
-          var timestamp = new Date(contract[3] * 1000);
+          var timestamp = new Date(contract[3] * 1000).toLocaleDateString("ru-RU", options);
           var amount = contract[4]/1000000;
           var address = contract[5];
 
