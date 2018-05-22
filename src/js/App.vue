@@ -2,7 +2,32 @@
   <div id="reg" class="wrapper">
     <div>
         {{account}}
-        {{contractsData}}
+        <table class="table table-sm">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Номер контракта</th>
+                    <th scope="col">Описание</th>
+                    <th scope="col">Дата</th>
+                    <th scope="col">Цена</th>
+                    <th scope="col">Владелец</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                <tr v-for="item in contractsData">
+                    <th>{{parseInt(item[0])}}</th>
+                    <td>{{item[1]}}</td>
+                    <td>{{item[2]}}</td>
+                    <td>{{new Date(item[3] * 1000).toLocaleDateString("ru-RU", options)}}</td>
+                    <td>{{parseInt(item[4])}}</td>
+                    <td>{{item[5]}}</td>
+                </tr>
+                
+            </tbody>
+        </table>
+
     </div>
   </div>
 </template>
@@ -23,7 +48,9 @@ export default {
             contracts: {},
             contractsData:[],
             account: '0x0',
-            hasVoted: false
+            hasVoted: false,
+            options :{ year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric', second:'numeric' },
+
         }
     },
     methods: {
@@ -37,16 +64,13 @@ export default {
             });
         },
         initContract: function() {
-            
-            let c = this.getContractJSON()
-            // Instantiate a new truffle contract from the artifact
-            this.contracts.Contracts = TruffleContract(c)
-            // Connect provider to interact with contract
-            this.contracts.Contracts.setProvider(this.web3Provider)
+            return this.getContractJSON().then(function(c){
+                this.contracts.Contracts = TruffleContract(c)
+                this.contracts.Contracts.setProvider(this.web3Provider)
+            })
         },
         getContractJSON: function() {
-             this.$http.get('/Contracts.json').then(response => {
-
+            return this.$http.get('/Contracts.json').then(response => {
                 // get body data
                 this.contractJSON = response.body
                 return response.body
@@ -70,39 +94,21 @@ export default {
       },
       fetchData(){
         this.getAccount()
-        this.initWeb3()
-
-        // Load contract data
-        debugger;
-        this.contracts.Contracts.deployed().then(function (instance) {
-          contractInstance = instance
-          return contractInstance.contractCount()
-        }).then(function (contractCount) {
-            console.log('!!!!')
-            console.log(contractCount)
-            
-          for (var i = 1; i <= contractCount; i++) {
-            contractInstance.contracts(i).then(function (contract) {
-              contractsData.push(contract)
-              // var id = contract[0]
-              // var contractNum = contract[1]
-              // var description = contract[2]
-              // var timestamp = new Date(contract[3] * 1000).toString()
-              // var amount = contract[4]
-              // var contractAddress = contract[5]
-
-              // Render candidate Result
-              // var contractTemplate = "<tr><th>" + id + "</th><td>" + contractNum + "</td><td>" + description + "</td><td>" + timestamp + "</td><td>" + amount + "</td><td>" + contractAddress + "</td></tr>"
-              // contractResults.append(contractTemplate)
-
-              // Render button
-              // var candidateOption = "<option value='" + id + "' >" + name + "</ option>"
-              // candidatesSelect.append(candidateOption)
+        this.initWeb3().then(()=>{
+            // Load contract data
+            this.contracts.Contracts.deployed().then(instance => {
+                this.contractInstance = instance
+                return this.contractInstance.contractCount()
+            }).then((contractCount)  => {
+                for (var i = 1; i <= contractCount+1; i++) {
+                    this.contractInstance.contracts(i).then(contract => {
+                        this.contractsData.splice(contract[0], 1, contract)
+                    })
+                }
+                return true
+            }).catch(function (error) {
+                console.warn(error)
             })
-          }
-          return true
-        }).catch(function (error) {
-          console.warn(error)
         })
       }
     },
