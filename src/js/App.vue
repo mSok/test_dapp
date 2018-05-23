@@ -15,7 +15,7 @@
             </thead>
             <tbody>
                 <tr v-for="item in contractsData">
-                    <th>{{parseInt(item[0]})}</th>
+                    <th>{{parseInt(item[0])}}</th>
                     <td>{{item[1]}}</td>
                     <td>{{item[2]}}</td>
                     <td>{{new Date(item[3] * 1000).toLocaleDateString("ru-RU", options)}}</td>
@@ -68,22 +68,12 @@ export default {
 
         },
         onCreateContract: function(contract_obj) {
-            console.log(this.web3.eth.accounts)
-            console.log(this.web3.eth.defaultAccount)
-            
             this.web3.eth.defaultAccount=this.web3.eth.coinbase
             this.contractInstance.createContract(
                 contract_obj["contructnum"],
                 contract_obj["descr"],
                 contract_obj["amount"],
                 {from: this.account}
-            ).then(
-                ()=>{
-                    console.log('ok')
-                },
-                (err)=>{
-                    console.log('Fail: ', err)
-                }
             )
         },
         initContract: function() {

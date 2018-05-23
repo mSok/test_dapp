@@ -62,6 +62,7 @@ contract Contracts {
         returns (uint contractId) {
         contractCount ++;
         Contract storage c = contracts[contractCount];
+        c.id = contractCount;
         c.contractNum = _contractNum;
         c.description = _description;
         c.timestamp = now;
