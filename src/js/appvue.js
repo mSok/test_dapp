@@ -1,15 +1,7 @@
 import Vue from 'vue';
-import VueRouter from 'vue-router'
 import App from './App.vue'
+import router from './router'
 
-const router = new VueRouter({
-  routes: [
-    {
-      path: '/',
-      name: 'dashboard',
-      component: App
-    }]
-})
 
 new Vue({    // eslint-disable-line no-new
     el: '#app',

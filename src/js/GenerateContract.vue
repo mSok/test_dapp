@@ -39,8 +39,11 @@ export default {
             if(this.contructnum && this.descr && this.amount && this.amount>0) return true;
             if(!this.name) this.errors.push("не верно заполнены поля формы.");
         },
-        createContract: function(){
+        createContract: function(e){
             if (this.checkForm()) {
+                this.descr = this.contructnum = '';
+                this.amount = 0;
+                event.target.form.reset();
                 this.$emit('createContract', {contructnum: this.contructnum, descr: this.descr, amount: this.amount})
             }
         }

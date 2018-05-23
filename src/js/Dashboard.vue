@@ -1,25 +1,39 @@
+
 <template>
-  <div class="container mt-4">
-        <ul class="nav nav-tabs ">
-            <li class="nav-item">
-                <router-link exact active-class="bg-primary text-white" class="nav-link" :to="{name: 'dashboard'}">Главная</router-link>
-            </li>
-            <li class="nav-item">
-                <router-link exact active-class="bg-primary text-white" class="nav-link" :to="{name: 'bets'}">Ставки</router-link>
-            </li>
-        </ul>
-        <router-view></router-view>
-        <div class="alert alert-info text-center"> Ваш аккаунт: {{account}}</div>
-        <!-- {{fullAccount}} -->
-  </div>
+    <div>
+        <GenerateContract @createContract="onCreateContract"> </GenerateContract>
+        <table class="table table-sm">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Номер контракта</th>
+                    <th scope="col">Описание</th>
+                    <th scope="col">Дата</th>
+                    <th scope="col">Цена</th>
+                    <th scope="col">Владелец</th>
+                    <th scope="col">Закрыт</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="item in contractsData">
+                    <th>{{parseInt(item[0])}}</th>
+                    <td>{{item[1]}}</td>
+                    <td>{{item[2]}}</td>
+                    <td>{{new Date(item[3] * 1000).toLocaleDateString("ru-RU", options)}}</td>
+                    <td>{{parseInt(item[4])}}</td>
+                    <td>{{item[5]}}</td>
+                    <td>{{item[6]}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </template>
 
 <script>
-import Vue from 'vue'
-import VueResource from 'vue-resource'
-import TruffleContract from 'truffle-contract'
 
-Vue.use(VueResource)
+import Vue from 'vue'
+import GenerateContract from './GenerateContract.vue'
+Vue.component('GenerateContract', GenerateContract)
 
 export default {
     data () {
@@ -114,5 +128,5 @@ export default {
     created(){
       this.fetchData()
     },
-  }
+}
 </script>
