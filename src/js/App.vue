@@ -1,8 +1,5 @@
 <template>
-  <div class="container">
-    <div>
-        {{account}}
-        {{fullAccount}}
+  <div class="container mt-4">
         <GenerateContract @createContract="onCreateContract"> </GenerateContract>
         <table class="table table-sm">
             <thead class="thead-dark">
@@ -18,7 +15,7 @@
             </thead>
             <tbody>
                 <tr v-for="item in contractsData">
-                    <th>{{parseInt(item[0])}}</th>
+                    <th>{{parseInt(item[0]})}</th>
                     <td>{{item[1]}}</td>
                     <td>{{item[2]}}</td>
                     <td>{{new Date(item[3] * 1000).toLocaleDateString("ru-RU", options)}}</td>
@@ -28,7 +25,8 @@
                 </tr>
             </tbody>
         </table>
-    </div>
+        <div class="alert alert-info text-center"> Ваш аккаунт: {{account}}</div>
+        <!-- {{fullAccount}} -->
   </div>
 </template>
 
@@ -54,7 +52,6 @@ export default {
             fullAccount: [],
             hasVoted: false,
             options :{ year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric', second:'numeric' },
-
         }
     },
     methods: {
@@ -68,14 +65,25 @@ export default {
             });
         },
         getFullAccount() {
-            
+
         },
         onCreateContract: function(contract_obj) {
             console.log(this.web3.eth.accounts)
+            console.log(this.web3.eth.defaultAccount)
+            
+            this.web3.eth.defaultAccount=this.web3.eth.coinbase
             this.contractInstance.createContract(
                 contract_obj["contructnum"],
                 contract_obj["descr"],
-                contract_obj["amount"]
+                contract_obj["amount"],
+                {from: this.account}
+            ).then(
+                ()=>{
+                    console.log('ok')
+                },
+                (err)=>{
+                    console.log('Fail: ', err)
+                }
             )
         },
         initContract: function() {
@@ -89,7 +97,6 @@ export default {
                 // get body data
                 this.contractJSON = response.body
                 return response.body
-
             }, response => {
                 console.error('error get json contract')
             });
@@ -109,16 +116,17 @@ export default {
       },
       fetchData(){
         this.getAccount()
-        this.initWeb3().then(()=>{
+        this.initWeb3().then(() => {
             // Load contract data
             this.contracts.Contracts.deployed().then(instance => {
                 this.contractInstance = instance
+                // this.contractInstance
                 // Load account email
                 this.contractInstance.accounts(this.account).then(acc => {
                     this.fullAccount = acc;
                 })
                 return this.contractInstance.contractCount()
-            }).then((contractCount)  => {
+            }).then((contractCount) => {
                 for (var i = 1; i <= contractCount; i++) {
                     this.contractInstance.contracts(i).then(contract => {
                         this.contractsData.push(contract)
