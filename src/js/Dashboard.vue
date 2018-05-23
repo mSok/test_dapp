@@ -64,11 +64,19 @@ export default {
         },
         onCreateContract: function(contract_obj) {
             this.web3.eth.defaultAccount=this.web3.eth.coinbase
+            debugger;
             this.contractInstance.createContract(
                 contract_obj["contructnum"],
                 contract_obj["descr"],
                 contract_obj["amount"],
                 {from: this.account}
+            ).then(
+            res => {
+                console.log(res)
+            },
+            err=> {
+                console.log(err)
+            }
             )
         },
         initContract: function() {

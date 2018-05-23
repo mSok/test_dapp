@@ -41,10 +41,10 @@ export default {
         },
         createContract: function(e){
             if (this.checkForm()) {
+                this.$emit('createContract', {contructnum: this.contructnum, descr: this.descr, amount: this.amount})
                 this.descr = this.contructnum = '';
                 this.amount = 0;
                 event.target.form.reset();
-                this.$emit('createContract', {contructnum: this.contructnum, descr: this.descr, amount: this.amount})
             }
         }
     }
