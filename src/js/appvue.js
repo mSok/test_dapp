@@ -6,7 +6,6 @@ import router from './router'
 new Vue({    // eslint-disable-line no-new
     el: '#app',
     router,
-    data: {
-    },
+    data: { },
     render: h => h(App)
   })
