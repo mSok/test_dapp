@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 
 import BetContract from './BetContract.vue'
 import Dashboard from './Dashboard.vue'
+import SetBet from './SetBet.vue'
 
 
 Vue.use(VueRouter)
@@ -18,7 +19,12 @@ const router = new VueRouter({
       path: '/bets',
       name: 'bets',
       component: BetContract
-    }
+    },
+    {
+      path: '/bets/:contract_id',
+      name: 'setbet',
+      component: SetBet
+    },
   ]
 })
 

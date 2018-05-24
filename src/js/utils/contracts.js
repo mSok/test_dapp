@@ -19,7 +19,7 @@ export function getContractJSON () {
             console.error( xhr.status + ': ' + xhr.statusText ); // пример вывода: 404: Not Found
             return false
         } else {
-            return ( xhr.responseText ); // responseText -- текст ответа.
+            return (xhr.responseText ); // responseText -- текст ответа.
         }
 };
 

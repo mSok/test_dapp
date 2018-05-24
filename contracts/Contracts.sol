@@ -89,6 +89,7 @@ contract Contracts {
         rateCount ++;
 
         ContractRate storage cr = contractRates[rateCount];
+        cr.id = rateCount;
         cr.contractId = _contractId;
         cr.amount = _amount;
         cr.rateAddress = msg.sender;

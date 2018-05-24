@@ -12,6 +12,7 @@
                     <th scope="col">Цена</th>
                     <th scope="col">Владелец</th>
                     <th scope="col">Закрыт</th>
+                    <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>
@@ -23,6 +24,9 @@
                     <td>{{parseInt(item[4])}}</td>
                     <td>{{item[5]}}</td>
                     <td>{{item[6]}}</td>
+                    <td>
+                        <router-link exact :to="{name: 'setbet', params: { contract_id: parseInt(item[0]) }}">Сделать cтавку</router-link>
+                    </td>
                 </tr>
             </tbody>
         </table>

@@ -24,7 +24,6 @@ Vue.use(VueResource)
 export default {
     data () {
         return {
-            message: 'Hello Vue!',
             web3Provider: null,
             web3: {},
             contracts: {},
@@ -36,7 +35,7 @@ export default {
         }
     },
     methods: {
-        getAccount(){
+        getAccount() {
             // Load account data
             var self = this
             web3.eth.getCoinbase(function (err, account) {
