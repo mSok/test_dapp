@@ -78,6 +78,7 @@ contract Contracts {
     ) public {
         Account storage acc = accounts[msg.sender];
         acc.email = _email;
+        acc.accountAddress = msg.sender;
         accounts[msg.sender] = acc;
     }
 

@@ -1,115 +1,47 @@
 <template>
-  <div class="container mt-4">
-
-    BETS
-    <table class="table table-sm">
-        <thead class="thead-dark">
-            <tr>
-                <th scope="col">Номер контракта</th>
-                <th scope="col">Описание</th>
-                <th scope="col">Дата</th>
-                <th scope="col">Цена</th>
-                <th scope="col">Владелец контракта</th>
-                <th scope="col">Ставка</th>
-                <th scope="col">Участник</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="item in rateData">
-                <td>{{item[1][1]}}</td>
-                <td>{{item[1][2]}}</td>
-                <td>{{new Date(item[1][3] * 1000).toLocaleDateString("ru-RU", options)}}</td>
-                <td>{{parseInt(item[1][4])}}</td>
-                <td>{{item[1][5]}}</td>
-                <td>{{parseInt(item[3])}}</td>
-                <td>{{item[2]}}</td>
-            </tr>
-        </tbody>
-    </table>
+  <div class="row flex-xl-nowrap justify-content-center mt-4">
+      <div class="col-11">
+            <table class="table table-sm">
+                <thead class="thead-dark">
+                    <tr class="d-flex">
+                        <th scope="col" class="col-1" >Номер контракта</th>
+                        <th scope="col" class="col-3" >Описание</th>
+                        <th scope="col" class="col-1" >Дата</th>
+                        <th scope="col" class="col-1" >Цена</th>
+                        <th scope="col" class="col-2" >Владелец контракта</th>
+                        <th scope="col" class="col-1" >Ставка</th>
+                        <th scope="col" class="col-2" >Участник</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="item in rateData" class="d-flex">
+                        <td class = "col-sm-1">{{item[1][1]}}</td>
+                        <td class = "col-sm-3">{{item[1][2]}}</td>
+                        <td class = "col-sm-1">{{new Date(item[1][3] * 1000).toLocaleDateString("ru-RU", options)}}</td>
+                        <td class = "col-sm-1">{{parseInt(item[1][4])}}</td>
+                        <td class = "col-sm-2">{{item[1][5]}}</td>
+                        <td class = "col-sm-1">{{parseInt(item[3])}}</td>
+                        <td class = "col-sm-2">{{item[2]}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
   </div>
 </template>
 
 <script>
+import {getBets} from './utils/contracts'
 export default {
     data () {
         return {
-            web3Provider: null,
-            web3: {},
-            contracts: {},
             rateData:[],
-            account: '0x0',
-            fullAccount: [],
-            hasVoted: false,
             options :{ year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric', second:'numeric' },
         }
     },
     methods: {
-        getAccount(){
-            // Load account data
-            var self = this
-            web3.eth.getCoinbase(function (err, account) {
-            if (err === null) {
-                    self.account = account;
-                }
-            });
-        },
-        getFullAccount() {
-
-        },
-        initContract: function() {
-            return this.getContractJSON().then(function(c){
-                this.contracts.Contracts = TruffleContract(c)
-                this.contracts.Contracts.setProvider(this.web3Provider)
-            })
-        },
-        getContractJSON: function() {
-            return this.$http.get('/Contracts.json').then(response => {
-                // get body data
-                this.contractJSON = response.body
-                return response.body
-            }, response => {
-                console.error('error get json contract')
-            });
-        },
-        initWeb3: function () {
-            // TODO: refactor conditional
-            if (typeof web3 !== 'undefined') {
-                // If a web3 instance is already provided by Meta Mask.
-                this.web3Provider = web3.currentProvider
-                this.web3 = new Web3(web3.currentProvider)
-            } else {
-                // Specify default instance if no web3 instance provided
-                this.web3Provider = new Web3.providers.HttpProvider('http://localhost:7545');
-                this.web3 = new Web3(this.web3Provider)
-            }
-            return this.initContract()
-      },
       fetchData(){
-        this.getAccount()
-        this.initWeb3().then(() => {
-            // Load contract data
-            this.contracts.Contracts.deployed().then(instance => {
-                this.contractInstance = instance
-                // this.contractInstance
-                // Load account email
-                this.contractInstance.accounts(this.account).then(acc => {
-                    this.fullAccount = acc;
-                })
-                return this.contractInstance.rateCount()
-            }).then((rateCount) => {
-                for (var i = 1; i <= rateCount; i++) {
-                    this.contractInstance.contractRates(i).then(rate => {
-
-                        this.contractInstance.contracts(rate[1]).then(contract => {
-                            rate[1] = contract
-                            this.rateData.push(rate)
-                        })
-                    })
-                }
-                return true
-            }).catch(function (error) {
-                console.warn(error)
-            })
+        getBets().then(dt => {
+            this.rateData = dt
         })
       }
     },
@@ -118,3 +50,16 @@ export default {
     },
   }
 </script>
+
+<style>
+.table {
+	table-layout:fixed;
+}
+
+.table td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+}
+</style>

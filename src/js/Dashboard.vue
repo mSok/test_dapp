@@ -1,6 +1,7 @@
 
 <template>
-    <div>
+    <div class="row flex-xl-nowrap justify-content-center mt-4">
+      <div class="col-11">
         <GenerateContract @createContract="onCreateContract"> </GenerateContract>
         <table class="table table-sm">
             <thead class="thead-dark">
@@ -31,12 +32,14 @@
             </tbody>
         </table>
     </div>
+    </div>
 </template>
 
 <script>
 
 import Vue from 'vue'
 import GenerateContract from './GenerateContract.vue'
+import {getAllContracts, createContract} from './utils/contracts.js'
 Vue.component('GenerateContract', GenerateContract)
 
 export default {
@@ -67,20 +70,21 @@ export default {
 
         },
         onCreateContract: function(contract_obj) {
-            this.web3.eth.defaultAccount=this.web3.eth.coinbase
-            this.contractInstance.createContract(
-                contract_obj["contructnum"],
-                contract_obj["descr"],
-                contract_obj["amount"],
-                {from: this.account}
-            ).then(
-            res => {
-                console.log(res)
-            },
-            err=> {
-                console.log(err)
-            }
-            )
+            createContract(contract_obj)
+            // this.web3.eth.defaultAccount=this.web3.eth.coinbase
+            // this.contractInstance.createContract(
+            //     contract_obj["contructnum"],
+            //     contract_obj["descr"],
+            //     contract_obj["amount"],
+            //     {from: this.account}
+            // ).then(
+            // res => {
+            //     console.log(res)
+            // },
+            // err=> {
+            //     console.log(err)
+            // }
+            // )
         },
         initContract: function() {
             return this.getContractJSON().then(function(c){
@@ -112,28 +116,9 @@ export default {
       },
       fetchData(){
         this.getAccount()
-        this.initWeb3().then(() => {
-            // Load contract data
-            this.contracts.Contracts.deployed().then(instance => {
-                this.contractInstance = instance
-                // this.contractInstance
-                // Load account email
-                this.contractInstance.accounts(this.account).then(acc => {
-                    this.fullAccount = acc;
-                })
-                return this.contractInstance.contractCount()
-            }).then((contractCount) => {
-                for (var i = 1; i <= contractCount; i++) {
-                    this.contractInstance.contracts(i).then(contract => {
-                        this.contractsData.push(contract)
-                    })
-                }
-                this.contractsData.sort(function(a, b){return a[0]-b[0]});
-                return true
-            }).catch(function (error) {
-                console.warn(error)
+            getAllContracts().then(dt => {
+                this.contractsData = dt
             })
-        })
       }
     },
     created(){
@@ -141,3 +126,16 @@ export default {
     },
 }
 </script>
+
+<style>
+.table {
+	table-layout:fixed;
+}
+
+.table td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+}
+</style>
