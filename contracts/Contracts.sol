@@ -46,10 +46,10 @@ contract Contracts {
     constructor ()  {
         Admin = msg.sender;
         // default debug;
+        setAccount("MainNetwork");
         createContract("0001", "первый контракт", 100);
         createContract("0002", "второй контракт", 300);
         setContractRate(1, 110);
-        setContractRate(1, 120);
         setContractRate(2, 310);
 
     }

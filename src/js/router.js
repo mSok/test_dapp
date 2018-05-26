@@ -5,6 +5,7 @@ import BetContract from './BetContract.vue'
 import Dashboard from './Dashboard.vue'
 import SetBet from './SetBet.vue'
 import Account from './Account.vue'
+import Hist from './History.vue'
 
 
 Vue.use(VueRouter)
@@ -30,6 +31,11 @@ const router = new VueRouter({
       path: '/account',
       name: 'account',
       component: Account
+    },
+    {
+      path: '/history',
+      name: 'history',
+      component: Hist
     }
   ]
 })

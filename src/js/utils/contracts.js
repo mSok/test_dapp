@@ -160,3 +160,57 @@ export function getBets () {
     })
   })
 }
+
+export function getContractBets (contractID) {
+  var contractInstance
+  return initWeb3().then((Contracts) => {
+    // Load contract data
+    return Contracts.deployed().then(instance => {
+      contractInstance = instance
+      return contractInstance.getContractRateCount(contractID).then(async cnt => {
+        console.log('getContractRateCount:', cnt)
+        let bets = []
+        for (var i = 0; i < cnt; i++) {
+          console.log('index:', i)
+          await contractInstance.getContractRateAtIndex(contractID, i).then(async data => {
+            data[2] = await getAccountName(data[2])
+            bets.push(data)
+          })
+        }
+        console.log('contract bets:', bets)
+        return bets
+      })
+    })
+  })
+}
+
+//  TODO
+export function getContractHist(){
+  return initWeb3().then((Contracts) => {
+    return Contracts.deployed().then(instance => {
+      console.log('address: ', instance.address)
+      var filter = web3.eth.filter({
+        address: instance.address,
+        fromBlock: 0
+      })
+      filter.get(function(err, result) {
+        debugger
+        if(err) {
+          alert(err);
+          return;
+        }
+        // sort the events based on blockNumber since they don't seem to come
+        // ordered
+        result.sort(function(a,b) {
+          return a.blockNumber - b.blockNumber;
+        })
+        // iterate over the events and get the data we need for the table
+        // using the blockNumber in the event object.  Specifying the blockNumber
+        // is how we access prior state for a smart contract instance
+        result.forEach(function(e) {
+          console.log('e:', e);
+        })
+    })
+  })
+})
+}
