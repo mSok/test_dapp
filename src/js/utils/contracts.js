@@ -184,33 +184,31 @@ export function getContractBets (contractID) {
   })
 }
 
-//  TODO
-export function getContractHist(){
+export function listenForEvents (app) {
   return initWeb3().then((Contracts) => {
     return Contracts.deployed().then(instance => {
-      console.log('address: ', instance.address)
-      var filter = web3.eth.filter({
-        address: instance.address,
-        fromBlock: 0
+      instance.accountEvent({_accountAddresss: web3.eth.coinbase}, {
+        filter: {_from: web3.eth.coinbase},
+        fromBlock: 'latest',
+        toBlock: 'latest'
+      }).watch(function (err, event) {
+        console.log('event triggered', event)
+        app.$root.bus.$emit('reloadAccount', event.args)
       })
-      filter.get(function(err, result) {
-        debugger
-        if(err) {
-          alert(err);
-          return;
-        }
-        // sort the events based on blockNumber since they don't seem to come
-        // ordered
-        result.sort(function(a,b) {
-          return a.blockNumber - b.blockNumber;
-        })
-        // iterate over the events and get the data we need for the table
-        // using the blockNumber in the event object.  Specifying the blockNumber
-        // is how we access prior state for a smart contract instance
-        result.forEach(function(e) {
-          console.log('e:', e);
-        })
     })
   })
-})
+}
+
+export function getAccountHist (app) {
+  return initWeb3().then((Contracts) => {
+    return Contracts.deployed().then(instance => {
+      instance.accountEvent({_accountAddresss: web3.eth.coinbase}, {
+        fromBlock: 0,
+        toBlock: 'latest'
+      }).get((err, event) => {
+        console.log('event get triggered', event)
+        app.$root.bus.$emit('accountHist', event)
+      })
+    })
+  })
 }

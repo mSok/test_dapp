@@ -21,7 +21,7 @@
 
 <script>
 import Vue from 'vue'
-import {getFullAccount} from './utils/contracts.js'
+import {getFullAccount, listenForEvents} from './utils/contracts.js'
 
 export default {
     data () {
@@ -35,63 +35,72 @@ export default {
     },
     created(){
         this.selfAddress = web3.eth.coinbase
+        listenForEvents(this)
         getFullAccount().then(acc=>{
             this.account = acc;
         })
-    }
+    },
+    mounted(){
+      this.$bus.$on('reloadAccount', event => {
+        console.log('catch bus event reloadAccount....')
+        getFullAccount().then(acc=>{
+            this.account = acc;
+        })
+      });
+    },
 
   }
 </script>
 <style>
 
 @media only screen and (max-width: 800px) {
-	
-	/* Force table to not be like tables anymore */
-	#no-more-tables table,
-	#no-more-tables thead,
-	#no-more-tables tbody,
-	#no-more-tables th,
-	#no-more-tables td,
-	#no-more-tables tr {
-		display: block;
-	}
+    
+    /* Force table to not be like tables anymore */
+    #no-more-tables table,
+    #no-more-tables thead,
+    #no-more-tables tbody,
+    #no-more-tables th,
+    #no-more-tables td,
+    #no-more-tables tr {
+        display: block;
+    }
  
-	/* Hide table headers (but not display: none;, for accessibility) */
-	#no-more-tables thead tr {
-		position: absolute;
-		top: -9999px;
-		left: -9999px;
-	}
+    /* Hide table headers (but not display: none;, for accessibility) */
+    #no-more-tables thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
  
-	#no-more-tables tr { border: 1px solid #ccc; }
+    #no-more-tables tr { border: 1px solid #ccc; }
  
-	#no-more-tables td { 
-		/* Behave  like a "row" */
-		border: none;
-		border-bottom: 1px solid #eee; 
-		position: relative;
-		padding-left: 50%; 
-		white-space: normal;
-		text-align:left;
-	}
+    #no-more-tables td { 
+        /* Behave  like a "row" */
+        border: none;
+        border-bottom: 1px solid #eee; 
+        position: relative;
+        padding-left: 50%; 
+        white-space: normal;
+        text-align:left;
+    }
  
-	#no-more-tables td:before {
-		/* Now like a table header */
-		position: absolute;
-		/* Top/left values mimic padding */
-		top: 6px;
-		left: 6px;
-		width: 45%; 
-		padding-right: 10px; 
-		white-space: nowrap;
-		text-align:left;
-		font-weight: bold;
-	}
+    #no-more-tables td:before {
+        /* Now like a table header */
+        position: absolute;
+        /* Top/left values mimic padding */
+        top: 6px;
+        left: 6px;
+        width: 45%; 
+        padding-right: 10px; 
+        white-space: nowrap;
+        text-align:left;
+        font-weight: bold;
+    }
  
-	/*
-	Label the data
-	*/
-	#no-more-tables td:before { content: attr(data-title); }
+    /*
+    Label the data
+    */
+    #no-more-tables td:before { content: attr(data-title); }
 }
 </style>
 
