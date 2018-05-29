@@ -9,7 +9,7 @@
 
 <script>
 import Vue from 'vue'
-import {getContractHist} from './utils/contracts.js'
+// import {getContractHist} from './utils/contracts.js'
 
 export default {
     data () {
@@ -19,10 +19,10 @@ export default {
     },
     methods: {
         fetchData(){
-            getContractHist().then(data => {
-                this.contract = data
-                console.log(data)
-            })
+            // getContractHist().then(data => {
+            //     this.contract = data
+            //     console.log(data)
+            // })
         }
     },
     created() {
