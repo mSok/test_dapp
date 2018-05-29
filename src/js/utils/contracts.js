@@ -184,31 +184,31 @@ export function getContractBets (contractID) {
   })
 }
 
-export function listenForEvents (app) {
-  return initWeb3().then((Contracts) => {
-    return Contracts.deployed().then(instance => {
-      instance.accountEvent({_accountAddresss: web3.eth.coinbase}, {
-        filter: {_from: web3.eth.coinbase},
-        fromBlock: 'latest',
-        toBlock: 'latest'
-      }).watch(function (err, event) {
-        console.log('event triggered', event)
-        app.$root.bus.$emit('reloadAccount', event.args)
-      })
-    })
-  })
-}
+// export function listenForEvents (app) {
+//   return initWeb3().then((Contracts) => {
+//     return Contracts.deployed().then(instance => {
+//       instance.accountEvent({_accountAddresss: web3.eth.coinbase}, {
+//         filter: {_from: web3.eth.coinbase},
+//         fromBlock: 'latest',
+//         toBlock: 'latest'
+//       }).watch(function (err, event) {
+//         console.log('event triggered', event)
+//         app.$root.bus.$emit('reloadAccount', event.args)
+//       })
+//     })
+//   })
+// }
 
-export function getAccountHist (app) {
-  return initWeb3().then((Contracts) => {
-    return Contracts.deployed().then(instance => {
-      instance.accountEvent({_accountAddresss: web3.eth.coinbase}, {
-        fromBlock: 0,
-        toBlock: 'latest'
-      }).get((err, event) => {
-        console.log('event get triggered', event)
-        app.$root.bus.$emit('accountHist', event)
-      })
-    })
-  })
-}
+// export function getAccountHist (app) {
+//   return initWeb3().then((Contracts) => {
+//     return Contracts.deployed().then(instance => {
+//       instance.accountEvent({_accountAddresss: web3.eth.coinbase}, {
+//         fromBlock: 0,
+//         toBlock: 'latest'
+//       }).get((err, event) => {
+//         console.log('event get triggered', event)
+//         app.$root.bus.$emit('accountHist', event)
+//       })
+//     })
+//   })
+// }

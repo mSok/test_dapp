@@ -45,7 +45,7 @@ export default {
         },
     },
     created(){
-      getAccountHist(this)
+    //   getAccountHist(this)
       getFullAccount().then(data => {
           if (data){
               this.email=data

@@ -21,7 +21,7 @@
 
 <script>
 import Vue from 'vue'
-import {getFullAccount, listenForEvents} from './utils/contracts.js'
+import {getFullAccount } from './utils/contracts.js'
 
 export default {
     data () {
@@ -35,7 +35,7 @@ export default {
     },
     created(){
         this.selfAddress = web3.eth.coinbase
-        listenForEvents(this)
+        // listenForEvents(this)
         getFullAccount().then(acc=>{
             this.account = acc;
         })

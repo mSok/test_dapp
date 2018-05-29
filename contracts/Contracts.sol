@@ -27,10 +27,10 @@ contract Contracts {
         string email;
     }
     // change Account event
-    event accountEvent (
-        address indexed _accountAddresss,
-        string _email
-    );
+    // event accountEvent (
+    //     address indexed _accountAddresss,
+    //     string _email
+    // );
 
     // Contract[] public contracts;          // All contracts
     mapping(uint => Contract) public contracts;
@@ -86,7 +86,7 @@ contract Contracts {
         acc.accountAddress = msg.sender;
         accounts[msg.sender] = acc;
         // trigger voted event
-        accountEvent(msg.sender, _email);
+        // accountEvent(msg.sender, _email);
     }
 
     function setContractRate (
