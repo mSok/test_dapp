@@ -57,13 +57,26 @@ module.exports = {
     }
   },
   devServer: {
-    contentBase: [path.join(__dirname, "src"), path.join(__dirname, "build", "contracts")],
+    contentBase: [path.join(__dirname, "src"),  path.join(__dirname, "server"), path.join(__dirname, "build", "contracts")],
     historyApiFallback: true,
-    noInfo: true
+    port: 8080,
+    noInfo: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:9000/',
+        changeOrigin: true,
+        logLevel: 'debug'
+    },
+    }
   },
   performance: {
     hints: false
   },
+  plugins: [
+    new webpack.HotModuleReplacementPlugin({
+      multiStep: true
+    })
+  ],
   devtool: '#eval-source-map'
 }
 

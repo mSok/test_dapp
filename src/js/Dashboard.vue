@@ -40,6 +40,7 @@
 <script>
 
 import Vue from 'vue'
+import VueResourse from 'vue-resource'
 import GenerateContract from './GenerateContract.vue'
 import {getAllContracts, createContract} from './utils/contracts.js'
 Vue.component('GenerateContract', GenerateContract)
@@ -103,6 +104,14 @@ export default {
             return this.initContract()
       },
       fetchData(){
+        //     this.$http.get('/api').then(response => {
+        //     // get body data
+        //     debugger
+        //    console.log(response.body);
+
+        //         }, response => {
+        //             // error callback
+        //         });
         this.getAccount()
             getAllContracts().then(dt => {
                 this.contractsData = dt

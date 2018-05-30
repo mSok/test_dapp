@@ -31,7 +31,7 @@
 
 <script>
 import Vue from 'vue'
-import {setEmail, getFullAccount, getAccountHist} from './utils/contracts'
+import {setEmail, getFullAccount } from './utils/contracts'
 export default {
     data () {
         return {
@@ -54,7 +54,7 @@ export default {
     },
     mounted(){
         this.$bus.$on('reloadAccount', event => {
-            getAccountHist(this)
+            // getAccountHist(this)
         })
         this.$bus.$on('accountHist', event => {
             console.log('catch bus event accountHist....')
