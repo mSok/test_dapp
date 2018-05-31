@@ -1,17 +1,18 @@
 // dev-server.js
 const express = require('express')
+const bodyParser = require('body-parser')
 const MongoClient = require('mongodb').MongoClient
 const db = require('./config/db')
 const app = express()
 
-// Import routes
-// var api = require('./_routes');
+app.set('port', 9000)
+app.use(bodyParser.json())
 
-app.set('port', 9000);
 MongoClient.connect(db.url, (err, database) => {
   if (err) return console.log(err)
   const dcContracts = database.db('contracts')
   console.log('mongo connected...')
+
   // Import routes
   require('./_routes')(app, dcContracts)
   app.listen(app.get('port'), () => {

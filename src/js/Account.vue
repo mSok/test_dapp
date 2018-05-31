@@ -1,29 +1,15 @@
 <template>
     <div>
         <div class="text-center">
-            <p class="lead text-muted">Введите Email, он будет сохранен в сети blockchain и привязан к вашему кошельку</p>
+            <p class="lead text-muted">Введите Email, он будет сохранен и привязан к вашему кошельку</p>
         </div>
     <div class="row pb-2">
-        <div class="col-6">
+        <div class="col-12">
             <div class="form-row justify-content-center pt-4">
-                <input v-model="email" type="text">
-                <button @click="setEmail" class="btn-primary">Тадам!</button>
+                <input v-model="email" type="text" placeholder="Email">
+                <input v-model="nick" type="text" class="ml-2" placeholder="Nickname">
+                <button @click="setEmail" class="btn-primary ml-2">Тадам!</button>
             </div>
-        </div>
-        <div class="col-6">
-            <p class="lead text-muted">История логина: </p>
-            <table class="table table-sm">
-                <thead class="thead-dark">
-                    <tr >
-                        <th>логин</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="item in hist">
-                        <td>{{item['_email']}}</td>
-                    </tr>
-                </tbody>
-            </table>
         </div>
     </div>
     </div>
@@ -36,32 +22,21 @@ export default {
     data () {
         return {
             email:'',
-            hist: []
+            nick:''
         }
     },
     methods: {
         setEmail(){
-            setEmail(this.email)
+            setEmail(this.email, this.nick)
         },
     },
     created(){
-    //   getAccountHist(this)
       getFullAccount().then(data => {
           if (data){
-              this.email=data
+              this.email=data.email
+              this.nick=data.nick
           }
       })
     },
-    mounted(){
-        this.$bus.$on('reloadAccount', event => {
-            // getAccountHist(this)
-        })
-        this.$bus.$on('accountHist', event => {
-            console.log('catch bus event accountHist....')
-            for (var i = 0; i < event.length; i++) {
-                this.hist.push(event[i].args)
-            }
-        });
-    }
   }
 </script>

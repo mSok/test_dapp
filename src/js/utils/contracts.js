@@ -1,3 +1,4 @@
+import app from '../../main'
 import axios from 'axios'
 import TruffleContract from 'truffle-contract'
 import Web3 from 'web3'
@@ -93,15 +94,9 @@ export function setBet (contractId, value) {
 }
 
 function getAccountName (address) {
-  return initWeb3().then((Contracts) => {
-    return Contracts.deployed().then(instance => {
-      return instance.accounts(address).then(acc => {
-        if (acc[1] === '') {
-          return address
-        }
-        return acc[1]
-      })
-    })
+  return axios.get('/api/user/' + address).then(res => {
+    if (!res.data) return address
+    return res.data.nick
   })
 }
 
@@ -113,19 +108,63 @@ export function getFullAccount () {
         return false
       })
     } else {
-      return initWeb3().then((Contracts) => {
-        return Contracts.deployed().then(instance => {
-          return instance.accounts(selfAccount).then(acc => {
-            if (acc[1] === '') { // TODO ошибка в контракте, не сохранил адрес || acc[0] === '0x0000000000000000000000000000000000000000') {
-              return false
-            }
-            return acc[1]
-          })
-        })
+      return axios.get('/api/user/' + selfAccount).then(res => {
+        console.log(res.data)
+        if (!res.data) return false
+        return res.data
       })
     }
   })
 }
+export function setEmail (email, nick) {
+  let self = this
+  return web3inst()[0].eth.getCoinbase().then(selfAccount => {
+    if (selfAccount === undefined) return false
+    let postData = {
+      email: email,
+      nick: nick,
+      id: selfAccount,
+      address: selfAccount
+    }
+    return axios.post('/api/user/', postData).then(res => {
+      console.log('Account changed')
+      console.log(res)
+      console.log(self)
+      app.bus.$emit('reloadAccount', res)
+    })
+  })
+}
+
+// ************ не храним данные пользователя в сети, неоч! просто для теста было.
+// export function setEmail (email) {
+//   return initWeb3().then((Contracts) => {
+//     Contracts.deployed().then(instance => {
+//       instance.setAccount(email)
+//     })
+//   })
+// }
+
+// export function getFullAccount () {
+//   return web3inst()[0].eth.getCoinbase().then(selfAccount => {
+//     if (selfAccount === undefined) {
+//       console.log('selfAccount: ', selfAccount)
+//       return new Promise((resolve, reject) => {
+//         return false
+//       })
+//     } else {
+//       return initWeb3().then((Contracts) => {
+//         return Contracts.deployed().then(instance => {
+//           return instance.accounts(selfAccount).then(acc => {
+//             if (acc[1] === '') { // TODO ошибка в контракте, не сохранил адрес || acc[0] === '0x0000000000000000000000000000000000000000') {
+//               return false
+//             }
+//             return acc[1]
+//           })
+//         })
+//       })
+//     }
+//   })
+// }
 
 export function createContract (contract) {
   return initWeb3().then((Contracts) => {
@@ -137,14 +176,6 @@ export function createContract (contract) {
           res => { console.log(res) },
           err => { console.error(err) }
         )
-    })
-  })
-}
-
-export function setEmail (email) {
-  return initWeb3().then((Contracts) => {
-    Contracts.deployed().then(instance => {
-      instance.setAccount(email)
     })
   })
 }
@@ -172,7 +203,7 @@ export function getBets () {
       console.warn(error)
     })
   })
-}
+}Vue
 
 export function getContractBets (contractID) {
   var contractInstance

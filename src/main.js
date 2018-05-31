@@ -11,7 +11,7 @@ Object.defineProperty(Vue.prototype, '$bus', {
 var bus = new Vue({})
 
 // eslint-disable-next-line
-new Vue({
+var app = new Vue({
   el: '#app',
   router,
   data: {
@@ -19,3 +19,5 @@ new Vue({
   },
   render: h => h(App)
 })
+
+export default app

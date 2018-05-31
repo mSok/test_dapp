@@ -12,7 +12,7 @@
             </li>
         </ul>
         <router-view></router-view>
-        <div v-if="account" class="alert alert-info text-center"> Ваш аккаунт: {{account}}</div>
+        <div v-if="account" class="alert alert-info text-center"> Ваш аккаунт: {{account.nick}}</div>
         <div v-else class="alert alert-warning text-center"> <router-link :to="{name: 'account'}"> Необходима регистрация {{selfAddress}}</router-link></div>
         <!-- {{fullAccount}} -->
   </div>
