@@ -1,17 +1,20 @@
 import axios from 'axios'
 import TruffleContract from 'truffle-contract'
 import Web3 from 'web3'
+import data from '../../assets/contracts/Contracts.json'
 
 export function initContract (web3, web3Provider) {
-  return getContractJSON().then((data) => {
+  // return getContractJSON().then((data) => {
+  return web3.eth.getCoinbase().then(selfAccount => {
     var Contracts = TruffleContract(data)
     Contracts.setProvider(web3Provider)
+    Contracts.web3.eth.defaultAccount = selfAccount
     return Contracts
   })
 }
 
 export function getContractJSON () {
-  return axios.get('/Contracts.json')
+  return axios.get('/src/assets/contracts/Contracts.json')
     .then((response) => {
       return response.data
     }, (error) => {
@@ -19,25 +22,30 @@ export function getContractJSON () {
     })
 }
 
-export function initWeb3 () {
-    // TODO: refactor conditional
+export function web3inst () {
   var web3Provider
   if (typeof web3 !== 'undefined') {
     // If a web3 instance is already provided by Meta Mask.
     web3Provider = web3.currentProvider
-    web3 = new Web3(web3.currentProvider)
+    var instance = new Web3(web3.currentProvider)
   } else {
     // Specify default instance if no web3 instance provided
     web3Provider = new Web3.providers.HttpProvider('http://localhost:7545')
-    web3 = new Web3(web3Provider)
+    instance = new Web3(web3Provider)
   }
-  web3.eth.defaultAccount = web3.eth.accounts[0]
+  return [instance, web3Provider]
+}
+
+export function initWeb3 () {
+    // TODO: refactor conditional
+  let web3, web3Provider
+  [web3, web3Provider] = web3inst()
   return initContract(web3, web3Provider)
 };
 
 export function getAllContracts () {
   var Contractinstance
-  return initWeb3().then((Contracts) => {
+  return initWeb3().then(Contracts => {
     // Load contract data
     return Contracts.deployed().then(instance => {
       Contractinstance = instance
@@ -98,19 +106,24 @@ function getAccountName (address) {
 }
 
 export function getFullAccount () {
-  var selfAccount = web3.eth.coinbase
-  if (selfAccount === undefined) {
-    return false
-  }
-  return initWeb3().then((Contracts) => {
-    return Contracts.deployed().then(instance => {
-      return instance.accounts(selfAccount).then(acc => {
-        if (acc[1] === '') { // TODO ошибка в контракте, не сохранил адрес || acc[0] === '0x0000000000000000000000000000000000000000') {
-          return false
-        }
-        return acc[1]
+  return web3inst()[0].eth.getCoinbase().then(selfAccount => {
+    if (selfAccount === undefined) {
+      console.log('selfAccount: ', selfAccount)
+      return new Promise((resolve, reject) => {
+        return false
       })
-    })
+    } else {
+      return initWeb3().then((Contracts) => {
+        return Contracts.deployed().then(instance => {
+          return instance.accounts(selfAccount).then(acc => {
+            if (acc[1] === '') { // TODO ошибка в контракте, не сохранил адрес || acc[0] === '0x0000000000000000000000000000000000000000') {
+              return false
+            }
+            return acc[1]
+          })
+        })
+      })
+    }
   })
 }
 
@@ -122,7 +135,7 @@ export function createContract (contract) {
         contract['descr'],
         contract['amount']).then(
           res => { console.log(res) },
-          err => { console.log(err) }
+          err => { console.error(err) }
         )
     })
   })

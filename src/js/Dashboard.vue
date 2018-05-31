@@ -49,60 +49,18 @@ export default {
     data () {
         return {
             message: 'Hello Vue!',
-            web3Provider: null,
-            web3: {},
             contracts: {},
             contractsData:[],
-            account: '0x0',
-            fullAccount: [],
-            hasVoted: false,
             options :{ year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric', second:'numeric' },
         }
     },
     methods: {
-        getAccount(){
-            // Load account data
-            var self = this
-            web3.eth.getCoinbase(function (err, account) {
-            if (err === null) {
-                    self.account = account;
-                }
-            });
-        },
         getFullAccount() {
 
         },
         onCreateContract: function(contract_obj) {
             createContract(contract_obj)
         },
-        initContract: function() {
-            return this.getContractJSON().then(function(c){
-                this.contracts.Contracts = TruffleContract(c)
-                this.contracts.Contracts.setProvider(this.web3Provider)
-            })
-        },
-        getContractJSON: function() {
-            return this.$http.get('/Contracts.json').then(response => {
-                // get body data
-                this.contractJSON = response.body
-                return response.body
-            }, response => {
-                console.error('error get json contract')
-            });
-        },
-        initWeb3: function () {
-            // TODO: refactor conditional
-            if (typeof web3 !== 'undefined') {
-                // If a web3 instance is already provided by Meta Mask.
-                this.web3Provider = web3.currentProvider
-                this.web3 = new Web3(web3.currentProvider)
-            } else {
-                // Specify default instance if no web3 instance provided
-                this.web3Provider = new Web3.providers.HttpProvider('http://localhost:7545');
-                this.web3 = new Web3(this.web3Provider)
-            }
-            return this.initContract()
-      },
       fetchData(){
         //     this.$http.get('/api').then(response => {
         //     // get body data
@@ -112,9 +70,11 @@ export default {
         //         }, response => {
         //             // error callback
         //         });
-        this.getAccount()
             getAllContracts().then(dt => {
                 this.contractsData = dt
+            },
+            error => {
+                console.error(error)
             })
       }
     },
