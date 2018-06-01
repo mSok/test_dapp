@@ -13,7 +13,7 @@
         </ul>
         <router-view></router-view>
         <div v-if="account" class="alert alert-info text-center"> Ваш аккаунт: {{account.nick}}</div>
-        <div v-else class="alert alert-warning text-center"> <router-link :to="{name: 'account'}"> Необходима регистрация {{selfAddress}}</router-link></div>
+        <div v-else class="alert alert-warning text-center"> <router-link :to="{name: 'account'}"> {{errMsg}}</router-link></div>
         <!-- {{fullAccount}} -->
   </div>
 </template>
@@ -23,38 +23,43 @@ import Vue from 'vue'
 import {getFullAccount, web3inst} from './js/utils/contracts.js'
 
 export default {
-    data () {
-        return {
-            account: false,
-            selfAddress: '0x00'
-        }
-    },
-    methods: {
-
-    },
-    created(){
-      web3inst()[0].eth.getCoinbase().then(addr =>{
-        if (addr === undefined){
+  data () {
+    return {
+      account: false,
+      selfAddress: '0x00',
+      errMsg: 'Необходима регистрация '
+    }
+  },
+  methods: {
+    readAccount(){
+      getFullAccount().then(acc => {
+        console.log('acc: ', acc)
+        this.account = acc;
+      },
+      error => {
+          if (error.code === 403) {
+            this.errMsg = 'Необходимо авторизоваться в MetaMask'
+          }
+      })
+    }
+  },
+  created(){
+    web3inst()[0].eth.getCoinbase().then(addr =>{
+      if (addr === undefined){
         this.selfAddress = ''
       } else {
         this.selfAddress = addr
       }
-      })
-       // listenForEvents(this)
-      getFullAccount().then(acc => {
-        console.log('acc: ', acc)
-        this.account = acc;
-      })
-    },
-    mounted(){
-      this.$bus.$on('reloadAccount', event => {
-        console.log('catch bus event reloadAccount....')
-        getFullAccount().then(acc=>{
-            this.account = acc;
-        })
-      });
-    },
-  }
+    })
+    this.readAccount()
+  },
+  mounted(){
+    this.$bus.$on('reloadAccount', event => {
+      console.log('catch bus event reloadAccount....')
+      this.readAccount()
+    });
+  },
+}
 </script>
 <style>
 

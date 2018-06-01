@@ -6,13 +6,14 @@
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
-    "dev-server": "node ./server/dev-server.js",
+    "dev-server": "nodemon ./server/dev-server.js",
     "start": "npm run dev",
     "lint": "eslint --ext .js,.vue src",
     "build": "node build/build.js"
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "bignumber.js": "^7.2.1",
     "express": "^4.16.3",
     "moment": "^2.22.1",
     "mongodb": "^3.1.0-beta4",
@@ -20,7 +21,8 @@
     "vue": "^2.5.2",
     "vue-resource": "^1.5.1",
     "vue-router": "^3.0.1",
-    "web3": "^1.0.0-beta.34"
+    "web3": "^1.0.0-beta.34",
+    "websocket": "^1.0.26"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

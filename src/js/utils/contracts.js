@@ -7,10 +7,41 @@ import data from '../../assets/contracts/Contracts.json'
 export function initContract (web3, web3Provider) {
   // return getContractJSON().then((data) => {
   return web3.eth.getCoinbase().then(selfAccount => {
+    if (selfAccount === null) {
+      throw({
+        code: 403,
+        reason:'Not authorized'
+      })
+    }
+    checkNetwork(web3).then(netId => {
+      if (netId !== 15){
+        console.log('Неправильная сеть')
+        throw ({
+          code: 400,
+          reason: 'Неправильная сеть'
+        })
+      }
+    })
     var Contracts = TruffleContract(data)
     Contracts.setProvider(web3Provider)
     Contracts.web3.eth.defaultAccount = selfAccount
     return Contracts
+  })
+}
+export async function checkNetwork(web3){
+  return await web3.eth.net.getId((err, netId) => {
+    switch (netId) {
+      case "1":
+        console.log('Основная сеть')
+        return 'Основная сеть'
+        break
+      case "15":
+        console.log('Приватная сеть')
+        return 'Приватная сеть'
+        break
+      default:
+        return 'Неизвестная сеть'
+    }
   })
 }
 
@@ -61,8 +92,6 @@ export function getAllContracts () {
         }
         return contractsData
       }(contractCount)
-    }).catch(function (error) {
-      console.error(error)
     })
   })
 }
@@ -102,11 +131,15 @@ function getAccountName (address) {
 
 export function getFullAccount () {
   return web3inst()[0].eth.getCoinbase().then(selfAccount => {
-    if (selfAccount === undefined) {
+    if (selfAccount === undefined || selfAccount === null) {
       console.log('selfAccount: ', selfAccount)
-      return new Promise((resolve, reject) => {
-        return false
+      throw({
+        code: 403,
+        reason:'Not authorized'
       })
+      // return new Promise((resolve, reject) => {
+      //   return false
+      // })
     } else {
       return axios.get('/api/user/' + selfAccount).then(res => {
         console.log(res.data)
@@ -114,6 +147,9 @@ export function getFullAccount () {
         return res.data
       })
     }
+  },
+  error=>{
+    console.error(error)
   })
 }
 export function setEmail (email, nick) {

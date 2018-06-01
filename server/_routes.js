@@ -10,7 +10,8 @@ router.get('/users', function (req, res) {
 })
 
 router.get('/user/:id', function (req, res) {
-  if (isNaN(parseInt(req.params.id))) {
+  console.log(req.params.id)
+  if (!req.params.id) {
     res.status(403).send({error: 'Incorrect user id'})
     return
   }

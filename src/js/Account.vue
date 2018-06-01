@@ -19,24 +19,30 @@
 import Vue from 'vue'
 import {setEmail, getFullAccount } from './utils/contracts'
 export default {
-    data () {
-        return {
-            email:'',
-            nick:''
-        }
+  data () {
+    return {
+      email:'',
+      nick:'',
+      errMsg: ''
+    }
+  },
+  methods: {
+    setEmail(){
+      setEmail(this.email, this.nick)
     },
-    methods: {
-        setEmail(){
-            setEmail(this.email, this.nick)
-        },
+  },
+  created(){
+    getFullAccount().then(data => {
+    if (data){
+      this.email=data.email
+      this.nick=data.nick
+      }
     },
-    created(){
-      getFullAccount().then(data => {
-          if (data){
-              this.email=data.email
-              this.nick=data.nick
-          }
-      })
-    },
-  }
+    error => {
+      if (error.code !== 403) {
+        console.error(error)
+      }
+    })
+  },
+}
 </script>

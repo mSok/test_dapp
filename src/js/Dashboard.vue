@@ -46,41 +46,33 @@ import {getAllContracts, createContract} from './utils/contracts.js'
 Vue.component('GenerateContract', GenerateContract)
 
 export default {
-    data () {
-        return {
-            message: 'Hello Vue!',
-            contracts: {},
-            contractsData:[],
-            options :{ year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric', second:'numeric' },
+  data () {
+    return {
+      message: 'Hello Vue!',
+      contracts: {},
+      contractsData:[],
+      options :{ year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric', second:'numeric' },
+    }
+  },
+  methods: {
+    onCreateContract: function(contract_obj) {
+      createContract(contract_obj)
+    },
+    fetchData(){
+      getAllContracts().then(dt => {
+        this.contractsData = dt
+      },
+      error => {
+        console.error('error')
+        if (error.code !== 403){
+          console.error(error)
         }
-    },
-    methods: {
-        getFullAccount() {
-
-        },
-        onCreateContract: function(contract_obj) {
-            createContract(contract_obj)
-        },
-      fetchData(){
-        //     this.$http.get('/api').then(response => {
-        //     // get body data
-        //     debugger
-        //    console.log(response.body);
-
-        //         }, response => {
-        //             // error callback
-        //         });
-            getAllContracts().then(dt => {
-                this.contractsData = dt
-            },
-            error => {
-                console.error(error)
-            })
-      }
-    },
-    created(){
-      this.fetchData()
-    },
+      })
+    }
+  },
+  created(){
+    this.fetchData()
+  },
 }
 </script>
 

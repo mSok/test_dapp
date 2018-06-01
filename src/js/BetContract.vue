@@ -32,19 +32,24 @@
 <script>
 import {getBets} from './utils/contracts'
 export default {
-    data () {
-        return {
-            rateData:[],
-            options :{ year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric', second:'numeric' },
-        }
-    },
-    methods: {
-      fetchData(){
-        getBets().then(dt => {
-            this.rateData = dt
-        })
+  data () {
+      return {
+          rateData:[],
+          options :{ year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric', second:'numeric' },
       }
-    },
+  },
+  methods: {
+    fetchData(){
+      getBets().then(dt => {
+        this.rateData = dt
+      },
+      error => {
+        if (error.code !== 403){
+          console.error(error)
+        }
+      })
+    }
+  },
     created(){
       this.fetchData()
     },
