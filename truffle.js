@@ -9,12 +9,24 @@ module.exports = {
   //     port: 8545
   // },
   contracts_build_directory: path.join(__dirname, 'src', 'assets', 'contracts'),
+  solc: {
+    optimizer: {
+      enabled: true,
+      runs: 200
+    }
+  },
   networks: {
     development: {
       host: '94.154.15.64',
       port: 8545,
       network_id: '15',
-      gas: 4712388
+    },
+    ropsten: {
+      host: "localhost",
+      port: 8545,
+      network_id: "3",
+      gas: 6712389,
+      gasPrice: 65000000000
     }
   }
 }
