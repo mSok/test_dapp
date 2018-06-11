@@ -3,28 +3,31 @@ import axios from 'axios'
 import TruffleContract from 'truffle-contract'
 import Web3 from 'web3'
 import data from '../../assets/contracts/Contracts.json'
+import { debug } from 'util';
+import contractsConst from './interface';
 
-export function initContract (web3, web3Provider) {
+export function initContract (web3Instance, web3Provider, contractType) {
   // return getContractJSON().then((data) => {
-  return web3.eth.getCoinbase().then(selfAccount => {
+  return web3Instance.eth.getCoinbase().then(selfAccount => {
     if (selfAccount === null) {
       throw({
         code: 403,
         reason:'Not authorized'
       })
     }
-    checkNetwork(web3).then(netId => {
-      if (netId !== 15){
-        console.log('Неправильная сеть')
-        throw ({
-          code: 400,
-          reason: 'Неправильная сеть'
-        })
-      }
+    checkNetwork(web3Instance).then(netId => {
+      // if (netId !== 15){
+      //   console.log('Неправильная сеть')
+      //   throw ({
+      //     code: 400,
+      //     reason: 'Неправильная сеть'
+      //   })
+      // }
     })
-    var Contracts = TruffleContract(data)
-    Contracts.setProvider(web3Provider)
-    Contracts.web3.eth.defaultAccount = selfAccount
+    let instweb3 = new Web3(window.web3.web3Provider)
+    
+    let abi = contractsConst[contractType]['abi']
+    let Contracts = new web3Instance.eth.Contract(abi, contractsConst[contractType]['address'])
     return Contracts
   })
 }
@@ -72,7 +75,7 @@ export function initWeb3 () {
     // TODO: refactor conditional
   let web3, web3Provider
   [web3, web3Provider] = web3inst()
-  return initContract(web3, web3Provider)
+  return initContract(web3, web3Provider, 'token')
 };
 
 export function getAllContracts () {
@@ -171,6 +174,18 @@ export function setEmail (email, nick) {
   })
 }
 
+export function getBalanceAccount () {
+  return web3inst()[0].eth.getCoinbase().then(selfAccount => {
+    return initWeb3().then((Contracts) => {
+      let _name = Contracts.methods.name().call()
+      let _balance = Contracts.methods.balanceOf(selfAccount).call()
+      let _decimal = Contracts.methods.decimals().call()
+      let _sym = Contracts.methods.symbol().call()
+      let _address = Contracts._address
+      return Promise.all([_name, _balance, _decimal, _sym, _address])
+    })
+  })
+}
 // ************ не храним данные пользователя в сети, неоч! просто для теста было.
 // export function setEmail (email) {
 //   return initWeb3().then((Contracts) => {

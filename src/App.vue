@@ -4,7 +4,7 @@
             <li class="nav-item">
                 <router-link exact active-class="bg-primary text-white" class="nav-link" :to="{name: 'dashboard'}">Главная</router-link>
             </li>
-            <li class="nav-item">
+            <li class="nav-item disabled ">
                 <router-link exact active-class="bg-primary text-white" class="nav-link" :to="{name: 'bets'}">Ставки</router-link>
             </li>
             <li class="nav-item">

@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 
 import BetContract from '../js/BetContract.vue'
 import Dashboard from '../js/Dashboard.vue'
+import TokenDashboard from '../js/TokenDashboard.vue'
 import SetBet from '../js/SetBet.vue'
 import Account from '../js/Account.vue'
 import Hist from '../js/History.vue'
@@ -14,7 +15,7 @@ const router = new VueRouter({
     {
       path: '/',
       name: 'dashboard',
-      component: Dashboard
+      component: TokenDashboard
     },
     {
       path: '/bets',
