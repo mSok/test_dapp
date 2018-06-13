@@ -15,8 +15,14 @@ secretkey
 
 <!-- 0x06f519f3d28c8baebecf0fe3b7a9d1b13ebfe16a -->
 
+<!-- crowdSalev2 contract -->
+<!-- 0x0c20edb4dea22ce14cc070f16330f4fcf47fc81f -->
+
 
 
 <!-- LIVE -->
 <!-- token -->
 <!-- 0xeddbc58afbd53a7e611526ecc99855c8d3746dd1 -->
+
+<!-- crowdSale -->
+<!-- 0x1E9e05B80293Ef35Ca1223398638096fa6B5Cde7 -->

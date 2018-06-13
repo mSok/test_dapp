@@ -615,5 +615,16 @@ contract SitisTradeTokenCrowdsale is MintedCrowdsale {
         public {
 
         }
+    modifier onlyOwner() {
+        require(msg.sender == wallet);
+        _;
+      }
+        // Change the current rate
+    function setCurrentRateOnline(uint256 val) public onlyOwner {
+            rate = val;
+        }
+    function transferOwnershipToken(address _newOwner) public onlyOwner {
+        MintableToken(token).transferOwnership(_newOwner);
+    }
     
 }

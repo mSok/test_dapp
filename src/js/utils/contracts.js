@@ -71,11 +71,11 @@ export function web3inst () {
   return [instance, web3Provider]
 }
 
-export function initWeb3 () {
+export function initWeb3 (contractType = 'token') {
     // TODO: refactor conditional
   let web3, web3Provider
   [web3, web3Provider] = web3inst()
-  return initContract(web3, web3Provider, 'token')
+  return initContract(web3, web3Provider, contractType)
 };
 
 export function getAllContracts () {
@@ -183,6 +183,22 @@ export function getBalanceAccount () {
       let _sym = Contracts.methods.symbol().call()
       let _address = Contracts._address
       return Promise.all([_name, _balance, _decimal, _sym, _address])
+    })
+  })
+}
+export function getTokenRate () {
+  return initWeb3('crowdSale').then((Contracts) => {
+    return Contracts.methods.rate().call()
+  })
+}
+
+export function buyTokens (amount) {
+  return web3inst()[0].eth.getCoinbase().then(selfAccount => {
+    return initWeb3('crowdSale').then((Contracts) => {
+      return Contracts.methods.buyTokens(selfAccount).send({
+        from: selfAccount,
+        value: amount
+      })
     })
   })
 }
