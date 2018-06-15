@@ -14,7 +14,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="item in rateData">
+                    <tr v-for="item in rateData" :key="item[1][1]">
                         <td data-title="Номер контракта" >{{item[1][1]}}</td>
                         <td data-title="Описание">{{item[1][2]}}</td>
                         <td data-title="Дата" >{{new Date(item[1][3] * 1000).toLocaleDateString("ru-RU", options)}}</td>

@@ -3,7 +3,7 @@
     <div class="p-2 mb-2 alert-danger" role="alert" v-if="errors.length">
         <b>Пожалуйста исправьте указанные ошибки:</b>
         <ul>
-            <li v-for="error in errors">{{ error }}</li>
+            <li v-for="error in errors" :key="error">{{ error }}</li>
         </ul>
     </div>
     <div class="form-row">

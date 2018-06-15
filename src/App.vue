@@ -20,7 +20,8 @@
 
 <script>
 import Vue from 'vue'
-import {getFullAccount, web3inst} from './js/utils/contracts.js'
+import {getFullAccount} from './js/utils/contracts.js'
+import {getCoinbase} from './js/utils/initContract.js'
 
 export default {
   data () {
@@ -44,7 +45,7 @@ export default {
     }
   },
   created(){
-    web3inst()[0].eth.getCoinbase().then(addr =>{
+    getCoinbase().then(addr =>{
       if (addr === undefined){
         this.selfAddress = ''
       } else {

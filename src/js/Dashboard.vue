@@ -18,7 +18,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="item in contractsData">
+                <tr v-for="item in contractsData" :key="item[0]">
                     <td data-title="#">{{parseInt(item[0])}}</td>
                     <td data-title="Номер контракта">{{item[1]}}</td>
                     <td data-title="Описание">{{item[2]}}</td>

@@ -16,10 +16,15 @@
             <input v-model="buyAmount" type="text" class="form-control" placeholder="кол-во токенов">
             <button @click.prevent.stop="buyTokens" class="btn-primary" >Купить</button>
             <button class="btn" disabled>Продать</button>
+            <div v-if="buyProgress" class="cssload-thecube">
+              <div class="cssload-cube cssload-c1"></div>
+              <div class="cssload-cube cssload-c2"></div>
+              <div class="cssload-cube cssload-c4"></div>
+              <div class="cssload-cube cssload-c3"></div>
+            </div>
           </div>
           <div>
             <span>Курс токена: {{rateBuitify}} ETH за 1 токен</span>
-
           </div>
 
           <!-- <span v-if="buyTX"> {{buyTX}} </span> -->
@@ -30,7 +35,8 @@
 
 import Vue from 'vue'
 import VueResourse from 'vue-resource'
-import {getAllContracts, getBalanceAccount, buyTokens, getTokenRate} from './utils/contracts.js'
+import {getBalanceAccount, buyTokens, getTokenRate} from './utils/token'
+import {initWeb3, getCoinbase} from './utils/initContract'
 
 export default {
   data () {
@@ -40,6 +46,7 @@ export default {
       amount: '',
       buyAmount: 0,
       buyTX:'',
+      buyProgress: false,
       rate: 0,
       tokenAaddress: '',
       decimal:0,
@@ -68,10 +75,41 @@ export default {
   },
   methods: {
     fetchData(){
-        getTokenRate().then(res =>{
+      initWeb3('crowdSale').then((Contracts) => {
+        this.crowdSaleContract = Contracts
+        getTokenRate(this.crowdSaleContract).then(res =>{
           this.rate = res
         })
-        getBalanceAccount().then(dt => {
+      })
+      initWeb3('token').then((Contracts) => {
+        this.tokenContract = Contracts
+        getCoinbase().then(acc => {
+            this.account = acc
+            getBalanceAccount(this.account, this.tokenContract).then(dt => {
+              this.tokenName = dt[0]
+              this.amount = dt[1]
+              this.decimal = parseInt(dt[2])
+              this.sym = dt[3]
+              this.tokenAaddress = dt[4]
+              this.tokenUrl = 'https://etherscan.io/token/' + this.tokenAaddress
+            })
+          })
+      })
+        // getTokenRate().then(res =>{
+        //   this.rate = res
+        // })
+        
+    },
+    buyTokens(){
+      console.log('buy ', this.buyAmount, ' tokens')
+      let conwertToWei = web3.toWei(this.buyAmount / this.rate)
+      console.log('this is  ', conwertToWei, ' wei')
+      this.buyProgress = true
+      buyTokens(conwertToWei).then(res => {
+        this.buyTX = res.transactionHash
+        // перечитаем баланс
+        this.buyProgress = false
+        getBalanceAccount(this.tokenContract).then(dt => {
           this.tokenName = dt[0]
           this.amount = dt[1]
           this.decimal = parseInt(dt[2])
@@ -79,16 +117,13 @@ export default {
           this.tokenAaddress = dt[4]
           this.tokenUrl = 'https://etherscan.io/token/' + this.tokenAaddress
         })
-    },
-    buyTokens(){
-      console.log('buy ', this.buyAmount, ' tokens')
-      let conwertToWei = web3.toWei(this.buyAmount / this.rate)
-      console.log('this is  ', conwertToWei, ' wei')
-
-      buyTokens(conwertToWei).then(res => {
-        this.buyTX = res.transactionHash
         console.log('buy res ', res)
-      })
+      },
+      err => {
+        console.log(err)
+        this.buyProgress = false
+      }
+      )
     }
   },
   created(){
@@ -96,8 +131,8 @@ export default {
   },
 }
 </script>
-
-<style>
+<style lang="scss">
+@import "/static/css/loader.css";
 .table {
 	table-layout:fixed;
 }
