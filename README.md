@@ -49,6 +49,6 @@ $ npm install
 ## Step 5. Configure Metamask
 Настроить кошелек на локальную сеть geth http://127.0.0.1:8545 или Ganache RPC SERVER http://127.0.0.1:7545 в зависимости от п.3
 
-## Step 6. Run the FrontEnd Application
-`$ npm run dev`
-http://localhost:3000
+## Step 6. Run the FrontEnd Application and BackEnd
+`$ npm run dev & npm run dev-server`
+http://localhost:8080

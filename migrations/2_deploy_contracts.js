@@ -1,14 +1,27 @@
-// var Election = artifacts.require("./Election.sol");
+// var Contracts = artifacts.require("./Contracts.sol");
 
 // module.exports = function(deployer) {
-//   deployer.deploy(Election);
+//   deployer.deploy(Contracts);
 // };
 
-var Contracts = artifacts.require("./Contracts.sol");
+var SitisTradeTokenCrowdsale = artifacts.require("./SitisTradeTokenCrowdsale.sol");
+var SitisTradeToken = artifacts.require("./SitisTradeToken.sol");
 
-module.exports = function(deployer) {
+// module.exports = function(deployer) {
+//   deployer.deploy(SitisTradeToken);
+// };
 
-  if (process.env.ACCOUNT_PASSWORD) {
-    deployer.deploy(Contracts);
-  }
+module.exports = function(deployer, network, accounts) {
+  const rate = new web3.BigNumber(1000);
+  const wallet = accounts[1];
+
+  return deployer
+      .then(() => {
+          return deployer.deploy(
+              SitisTradeTokenCrowdsale,
+              rate,
+              wallet,
+              SitisTradeToken.address
+          );
+      });
 };
