@@ -20,8 +20,9 @@
 
 <script>
 import Vue from 'vue'
-import {getFullAccount} from './js/utils/contracts.js'
-import {getCoinbase} from './js/utils/initContract.js'
+import {getFullAccount} from './js/utils/account'
+import {getCoinbase} from './js/utils/initContract'
+import {globalStore} from './js/utils/globalStore'
 
 export default {
   data () {
@@ -36,6 +37,7 @@ export default {
       getFullAccount().then(acc => {
         console.log('acc: ', acc)
         this.account = acc;
+        globalStore.account = acc
       },
       error => {
           if (error.code === 403) {
