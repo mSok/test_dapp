@@ -2,7 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 
 import BetContract from '../js/BetContract.vue'
-import Dashboard from '../js/Dashboard.vue'
+import ServiceDashboard from '../js/ServiceDashboard.vue'
 import TokenDashboard from '../js/TokenDashboard.vue'
 import SetBet from '../js/SetBet.vue'
 import Account from '../js/Account.vue'
@@ -16,6 +16,11 @@ const router = new VueRouter({
       path: '/',
       name: 'dashboard',
       component: TokenDashboard
+    },
+    {
+      path: '/services',
+      name: 'services',
+      component: ServiceDashboard
     },
     {
       path: '/bets',

@@ -1,12 +1,14 @@
 //   live
 let tokenAddress = '0xeddbc58afbd53a7e611526ecc99855c8d3746dd1'
 let crowdSaleAddress = '0x1E9e05B80293Ef35Ca1223398638096fa6B5Cde7'
+let sitisPlaceMarketAddress = '0x00'
 
 // test token address in ropsten
 if (process.env.NODE_ENV !== 'production') {
   // dev
   tokenAddress = '0x63120923A3E5bcE2783bBAeb581798273898755d'
   crowdSaleAddress = '0x0c20edb4dea22ce14cc070f16330f4fcf47fc81f'
+  sitisPlaceMarketAddress = '0x5d66be8353c754ff5ddaf78247fc63a183337986'
 }
 console.log('process.env.NODE_ENV', process.env.NODE_ENV)
 
@@ -155,6 +157,191 @@ let contractsConst = {
       }
     ],
     'address': crowdSaleAddress
+  },
+  'sitisPlaceMarket': {
+    'abi':[
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_serviceId",
+            "type": "uint256"
+          },
+          {
+            "name": "_cnt",
+            "type": "uint256"
+          }
+        ],
+        "name": "buyService",
+        "outputs": [
+          {
+            "name": "purchasesId",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "name": "_buyerAddresss",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "name": "_purchaseId",
+            "type": "uint256"
+          }
+        ],
+        "name": "buyServiceEvent",
+        "type": "event"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_serviceId",
+            "type": "uint256"
+          }
+        ],
+        "name": "closeService",
+        "outputs": [
+          {
+            "name": "serviceId",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_serviceHash",
+            "type": "string"
+          },
+          {
+            "name": "_amount",
+            "type": "uint256"
+          }
+        ],
+        "name": "createService",
+        "outputs": [
+          {
+            "name": "serviceId",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "purchases",
+        "outputs": [
+          {
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "name": "serviceId",
+            "type": "uint256"
+          },
+          {
+            "name": "cnt",
+            "type": "uint256"
+          },
+          {
+            "name": "buyer",
+            "type": "address"
+          },
+          {
+            "name": "closed",
+            "type": "bool"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "purchasesCount",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "serviceCount",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "services",
+        "outputs": [
+          {
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "name": "serviceHash",
+            "type": "string"
+          },
+          {
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "name": "serviceOwner",
+            "type": "address"
+          },
+          {
+            "name": "closed",
+            "type": "bool"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ],
+    'address': sitisPlaceMarketAddress
   }
 }
 
