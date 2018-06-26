@@ -7,42 +7,56 @@ contract SitisPlaceMarket {
     address public wallet;
     // услуга/товар
     struct Service {
-        uint id;
-        string serviceHash;
-        uint amount;
+        uint256 id;
+        bytes32 serviceHash;
+        uint256 amount;
         address serviceOwner;
         bool closed;
     }
     // купленные услуги
     struct purchasedService {
-        uint id;
-        uint serviceId;
-        uint cnt;
+        uint256 id;
+        uint256 serviceId;
+        uint256 cnt;
         address buyer;
         bool closed;  // совершенные
     }
     // маппинг услуг
-    mapping(uint => Service) public services;
-    uint public serviceCount;
+    mapping(uint256 => Service) public services;
+    mapping(bytes32 => Service) public hashServices;
+    uint256 public serviceCount;
 
     // маппинг покупок
-    mapping(uint => purchasedService) public purchases;
-    uint public purchasesCount;
+    mapping(uint256 => purchasedService) public purchases;
+    uint256 public purchasesCount;
 
     event buyServiceEvent (
-        address indexed _buyerAddresss,
-        uint _purchaseId,
-        address indexed _serviceOwner,
-        uint256 _value
+        address indexed buyerAddresss,
+        uint256 purchaseId,
+        address indexed serviceOwner,
+        uint256 value
+    );
+    event serviceCreateEvent (
+        bytes32 indexed serviceHash,
+        uint256 serviceId,
+        uint256 amount,
+        address serviceOwner
+    );
+    event serviceCloseEvent (
+        uint256 serviceId
+    );
+    event purchaseCloseEvent(
+        uint256 _purchaseId,
+        uint256 _amount
     );
     // маппинг покупок по покупателю (адрес покупателя => id покупки)
     // mapping(address => uint) public buyerPurchases;
 
     function createService (
-        string _serviceHash,
-        uint _amount
+        bytes32 _serviceHash,
+        uint256 _amount
     ) public
-        returns (uint serviceId) {
+        returns (uint256 serviceId) {
         serviceCount ++;
         Service storage c = services[serviceCount];
         c.id = serviceCount;
@@ -51,38 +65,53 @@ contract SitisPlaceMarket {
         c.closed = false;
         c.serviceOwner = msg.sender;
         services[serviceCount] = c;
+        hashServices[_serviceHash] = c;
+        emit serviceCreateEvent(
+            _serviceHash,
+            serviceCount,
+            _amount,
+            msg.sender
+        );
         return serviceCount;
     }
     // закрыть услугу, больше не предоставлять.
     function closeService (
-        uint _serviceId
+        uint256 _serviceId
     ) public
-        returns (uint serviceId) {
+        returns (uint256 serviceId) {
         Service storage c = services[_serviceId];
         require(msg.sender == c.serviceOwner);
         c.closed = true;
         services[_serviceId] = c;
+        hashServices[c.serviceHash] = c;
+        emit serviceCloseEvent(
+            _serviceId
+        );
         return serviceCount;
     }
     // закрыть покупку, перечислить средства продавцу.
     function closePurchase (
-        uint _purchaseId
+        uint256 _purchaseId
     ) public {
         purchasedService storage pc = purchases[_purchaseId];
         require(msg.sender == pc.buyer);
-        require(pc.id != 0);
+        // require(pc.id != 0);
         Service storage c = services[pc.serviceId];
         uint256 amount = pc.cnt * c.amount;
-        c.serviceOwner.transfer(amount);
+        address(c.serviceOwner).transfer(amount);
         pc.closed = true;
         purchases[_purchaseId] = pc;
+        emit purchaseCloseEvent(
+            _purchaseId,
+            amount
+        );
     }
     // купить услугу
     function buyService (
-        uint _serviceId,
-        uint _cnt
-    ) public payable
-        returns (uint purchasesId) {
+        uint256 _serviceId,
+        uint256 _cnt
+    ) payable public 
+        returns (uint256 purchasesId) {
         Service storage c = services[_serviceId];
         _preValidatePurchase(
             c.serviceOwner,
@@ -94,11 +123,12 @@ contract SitisPlaceMarket {
         purchasesCount ++;
         purchasedService storage pc = purchases[purchasesCount];
         pc.serviceId = _serviceId;
+        pc.id = purchasesCount;
         pc.cnt = _cnt;
         pc.buyer = msg.sender;
         pc.closed = false;
         purchases[purchasesCount] = pc;
-        _forwardFunds();
+
 
         emit buyServiceEvent(
             msg.sender,
@@ -108,9 +138,7 @@ contract SitisPlaceMarket {
         );
         return purchasesCount;
     }
-    function _forwardFunds() internal {
-        address(this).transfer(msg.value);
-    }
+
     // validate purchase
     function _preValidatePurchase(
         address _beneficiary,

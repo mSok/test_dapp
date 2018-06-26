@@ -8,7 +8,7 @@ if (process.env.NODE_ENV !== 'production') {
   // dev
   tokenAddress = '0x63120923A3E5bcE2783bBAeb581798273898755d'
   crowdSaleAddress = '0x0c20edb4dea22ce14cc070f16330f4fcf47fc81f'
-  sitisPlaceMarketAddress = '0x5d66be8353c754ff5ddaf78247fc63a183337986'
+  sitisPlaceMarketAddress = '0xe68E70d024ebB686184E885a065ACF5475c75c1e'
 }
 console.log('process.env.NODE_ENV', process.env.NODE_ENV)
 
@@ -161,6 +161,23 @@ let contractsConst = {
   'sitisPlaceMarket': {
     'abi':[
       {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "name": "_purchaseId",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "name": "_amount",
+            "type": "uint256"
+          }
+        ],
+        "name": "purchaseCloseEvent",
+        "type": "event"
+      },
+      {
         "constant": false,
         "inputs": [
           {
@@ -179,6 +196,20 @@ let contractsConst = {
             "type": "uint256"
           }
         ],
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_purchaseId",
+            "type": "uint256"
+          }
+        ],
+        "name": "closePurchase",
+        "outputs": [],
         "payable": false,
         "stateMutability": "nonpayable",
         "type": "function"
@@ -187,13 +218,62 @@ let contractsConst = {
         "anonymous": false,
         "inputs": [
           {
+            "indexed": false,
+            "name": "serviceId",
+            "type": "uint256"
+          }
+        ],
+        "name": "serviceCloseEvent",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
             "indexed": true,
-            "name": "_buyerAddresss",
+            "name": "serviceHash",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "name": "serviceId",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "name": "serviceOwner",
+            "type": "address"
+          }
+        ],
+        "name": "serviceCreateEvent",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "name": "buyerAddresss",
             "type": "address"
           },
           {
             "indexed": false,
-            "name": "_purchaseId",
+            "name": "purchaseId",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "name": "serviceOwner",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "name": "value",
             "type": "uint256"
           }
         ],
@@ -224,7 +304,7 @@ let contractsConst = {
         "inputs": [
           {
             "name": "_serviceHash",
-            "type": "string"
+            "type": "bytes32"
           },
           {
             "name": "_amount",
@@ -240,6 +320,41 @@ let contractsConst = {
         ],
         "payable": false,
         "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "name": "hashServices",
+        "outputs": [
+          {
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "name": "serviceHash",
+            "type": "bytes32"
+          },
+          {
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "name": "serviceOwner",
+            "type": "address"
+          },
+          {
+            "name": "closed",
+            "type": "bool"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
       },
       {
@@ -321,7 +436,7 @@ let contractsConst = {
           },
           {
             "name": "serviceHash",
-            "type": "string"
+            "type": "bytes32"
           },
           {
             "name": "amount",
@@ -334,6 +449,20 @@ let contractsConst = {
           {
             "name": "closed",
             "type": "bool"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "wallet",
+        "outputs": [
+          {
+            "name": "",
+            "type": "address"
           }
         ],
         "payable": false,
