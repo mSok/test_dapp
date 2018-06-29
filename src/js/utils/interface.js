@@ -8,7 +8,7 @@ if (process.env.NODE_ENV !== 'production') {
   // dev
   tokenAddress = '0x63120923A3E5bcE2783bBAeb581798273898755d'
   crowdSaleAddress = '0x0c20edb4dea22ce14cc070f16330f4fcf47fc81f'
-  sitisPlaceMarketAddress = '0xe68E70d024ebB686184E885a065ACF5475c75c1e'
+  sitisPlaceMarketAddress = '0x554A1f875F7D6dc1454CC80e82a082a4286c9982'
 }
 console.log('process.env.NODE_ENV', process.env.NODE_ENV)
 
@@ -165,16 +165,36 @@ let contractsConst = {
         "inputs": [
           {
             "indexed": false,
-            "name": "_purchaseId",
+            "name": "purchaseId",
             "type": "uint256"
           },
           {
             "indexed": false,
-            "name": "_amount",
+            "name": "serviceId",
             "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "name": "cancelOwner",
+            "type": "bool"
+          },
+          {
+            "indexed": false,
+            "name": "cancelBuyer",
+            "type": "bool"
+          },
+          {
+            "indexed": false,
+            "name": "status",
+            "type": "uint8"
           }
         ],
-        "name": "purchaseCloseEvent",
+        "name": "cancelPurchaseEvent",
         "type": "event"
       },
       {
@@ -208,8 +228,64 @@ let contractsConst = {
             "type": "uint256"
           }
         ],
+        "name": "cancelService",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_purchaseId",
+            "type": "uint256"
+          }
+        ],
         "name": "closePurchase",
         "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_serviceId",
+            "type": "uint256"
+          }
+        ],
+        "name": "closeService",
+        "outputs": [
+          {
+            "name": "serviceId",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_serviceHash",
+            "type": "bytes32"
+          },
+          {
+            "name": "_amount",
+            "type": "uint256"
+          }
+        ],
+        "name": "createService",
+        "outputs": [
+          {
+            "name": "serviceId",
+            "type": "uint256"
+          }
+        ],
         "payable": false,
         "stateMutability": "nonpayable",
         "type": "function"
@@ -281,45 +357,63 @@ let contractsConst = {
         "type": "event"
       },
       {
-        "constant": false,
+        "anonymous": false,
         "inputs": [
           {
-            "name": "_serviceId",
+            "indexed": false,
+            "name": "_purchaseId",
             "type": "uint256"
-          }
-        ],
-        "name": "closeService",
-        "outputs": [
+          },
           {
-            "name": "serviceId",
+            "indexed": false,
+            "name": "_amount",
             "type": "uint256"
           }
         ],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "function"
+        "name": "purchaseCloseEvent",
+        "type": "event"
       },
       {
         "constant": false,
         "inputs": [
           {
-            "name": "_serviceHash",
-            "type": "bytes32"
+            "name": "_beneficiary",
+            "type": "address"
           },
           {
-            "name": "_amount",
+            "name": "_weiAmount",
             "type": "uint256"
           }
         ],
-        "name": "createService",
-        "outputs": [
+        "name": "withdrawFunds",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
           {
-            "name": "serviceId",
-            "type": "uint256"
+            "name": "_arbiter",
+            "type": "address"
           }
         ],
         "payable": false,
         "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "arbiterWallet",
+        "outputs": [
+          {
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
       },
       {
@@ -359,6 +453,20 @@ let contractsConst = {
       },
       {
         "constant": true,
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+          {
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
         "inputs": [
           {
             "name": "",
@@ -382,6 +490,18 @@ let contractsConst = {
           {
             "name": "buyer",
             "type": "address"
+          },
+          {
+            "name": "status",
+            "type": "uint8"
+          },
+          {
+            "name": "cancelBuyer",
+            "type": "bool"
+          },
+          {
+            "name": "cancelOwner",
+            "type": "bool"
           },
           {
             "name": "closed",
@@ -449,20 +569,6 @@ let contractsConst = {
           {
             "name": "closed",
             "type": "bool"
-          }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-      },
-      {
-        "constant": true,
-        "inputs": [],
-        "name": "wallet",
-        "outputs": [
-          {
-            "name": "",
-            "type": "address"
           }
         ],
         "payable": false,
