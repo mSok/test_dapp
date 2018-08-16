@@ -146,7 +146,8 @@ contract SitisPlaceMarket {
     ) payable public
         returns (uint256 purchasesId) {
         Service storage c = services[_serviceId];
-        _preValidatePurchase(
+        preValidatePurchase(
+
             c.serviceOwner,
             msg.value,
             c.id,
@@ -192,7 +193,7 @@ contract SitisPlaceMarket {
             pc.cancelOwner = true;
         }
         // пришел вызов с контракта арбитража
-        if (msg.sender == arbiterWallet && pc.status = 2) {
+        if (msg.sender == arbiterWallet && pc.status == 2) {
             // отправляем средства покупателю
             address(pc.buyer).transfer(amount);
         }
@@ -204,7 +205,7 @@ contract SitisPlaceMarket {
             address(pc.buyer).transfer(amount);
         } else {
             pc.status = 2; // арбитраж
-
+        }
         // сохраняем статус покупки
         purchases[_purchaseId] = pc;
         emit cancelPurchaseEvent(
@@ -219,7 +220,7 @@ contract SitisPlaceMarket {
     }
 
     // validate purchase
-    function _preValidatePurchase(
+    function preValidatePurchase(
         address _beneficiary,
         uint256 _weiAmount,
         uint256 _serviceId,
