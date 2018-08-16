@@ -179,8 +179,9 @@ contract SitisPlaceMarket {
         purchasedService storage pc = purchases[_purchaseId];
         Service storage c = services[pc.serviceId];
         require(c.id != 0);
-        // отменить может только покупатель или продавец
-        require(msg.sender == pc.buyer || msg.sender == c.serviceOwner);
+        // отменить может только покупатель или продавец или контракт арбитраж
+        require(msg.sender == pc.buyer || msg.sender == c.serviceOwner || msg.sender == arbiterWallet);
+        // сделка не закрыта
         require(pc.closed == false);
 
         uint256 amount = pc.cnt * c.amount;
@@ -190,15 +191,20 @@ contract SitisPlaceMarket {
         if (msg.sender == c.serviceOwner) {
             pc.cancelOwner = true;
         }
+        // пришел вызов с контракта арбитража
+        if (msg.sender == arbiterWallet && pc.status = 2) {
+            // отправляем средства покупателю
+            address(pc.buyer).transfer(amount);
+        }
         // оба согласны;
-        if (pc.cancelOwner == true && pc.cancelBuyer == true) {
+        else if (pc.cancelOwner == true && pc.cancelBuyer == true) {
             pc.closed = true;
             pc.status = 3;
             // возврат денег покупателю
-            address(msg.sender).transfer(amount);
+            address(pc.buyer).transfer(amount);
         } else {
             pc.status = 2; // арбитраж
-        }
+
         // сохраняем статус покупки
         purchases[_purchaseId] = pc;
         emit cancelPurchaseEvent(
