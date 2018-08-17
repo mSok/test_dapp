@@ -162,8 +162,9 @@ contract SitisArbitration {
         require(arbiterId <= arbiterCount && arbiterId > 0, "not valid Id");
         Arbitration storage a = arbiterStats[arbiterId];
         uint percenVoited = percent(a.voitedCount, arbiterListCount, 3);
-        uint diff = (now - a.created) / 60 / 60 / 24;  // days
-        require(percenVoited > a.limit_percent * 10 && diff <= a.limit_days, "not enough voited");
+        // uint diff = (now - a.created) / 60 / 60 / 24;  // days
+        require(percenVoited > a.limit_percent * 10, "not enough voited");
+        // && diff <= a.limit_days
         return true;
     }
 }

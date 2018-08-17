@@ -17,16 +17,17 @@ module.exports = {
   },
   networks: {
     development: {
-      host: '94.154.15.64',
+      // host: '94.154.15.64',
+      host: '127.0.0.1',
       port: 8545,
-      network_id: '15',
+      network_id: '*',
     },
-    ropsten: {
-      host: "localhost",
-      port: 8545,
-      network_id: "3",
-      gas: 1000000,
-      gasPrice: 65000000000
-    }
+    // ropsten: {
+    //   host: "localhost",
+    //   port: 8545,
+    //   network_id: "3",
+    //   gas: 1000000,
+    //   gasPrice: 65000000000
+    // }
   }
 }
