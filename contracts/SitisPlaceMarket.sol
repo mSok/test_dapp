@@ -143,16 +143,15 @@ contract SitisPlaceMarket {
     function buyService (
         uint256 _serviceId,
         uint256 _cnt
-    ) payable public
+    ) preValidatePurchase payable public
         returns (uint256 purchasesId) {
         Service storage c = services[_serviceId];
-        preValidatePurchase(
-
-            c.serviceOwner,
-            msg.value,
-            c.id,
-            _cnt
-        );
+        // preValidatePurchase(
+        //     c.serviceOwner,
+        //     msg.value,
+        //     c.id,
+        //     _cnt
+        // );
         require(c.closed == false);
         purchasesCount ++;
         purchasedService storage pc = purchases[purchasesCount];
@@ -220,7 +219,8 @@ contract SitisPlaceMarket {
     }
 
     // validate purchase
-    function preValidatePurchase(
+    // TODO transfer to modifire
+    modifier preValidatePurchase(
         address _beneficiary,
         uint256 _weiAmount,
         uint256 _serviceId,
@@ -228,13 +228,13 @@ contract SitisPlaceMarket {
     )
         internal
     {
-        require(_beneficiary != address(0));
-        require(_weiAmount != 0);
-        require(_serviceId != 0);
+        require(_beneficiary != address(0), "Beneficiar is empty!");
+        require(_weiAmount != 0, "Amount is empty!");
+        require(_serviceId != 0, "serviceId is empty");
         Service storage c = services[_serviceId];
         require(c.id != 0);
-        require(_purchasesCount != 0);
-        require(c.amount * _purchasesCount <= _weiAmount);
+        require(_purchasesCount != 0, "count is empty");
+        require(c.amount * _purchasesCount <= _weiAmount, "not enough money");
     }
     // debug only
     function withdrawFunds(
