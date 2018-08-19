@@ -43,7 +43,7 @@ contract SitisArbitration {
         uint256 purchasedId;
         bool closed;
         uint created;
-        uint8 limit_percent;  // минимальное кол-во голосов для закрытия сделки
+        uint16 limit_percent;  // минимальное кол-во голосов для закрытия сделки
         uint8 limit_days;  // кол-во дней через которое можно однозначно закрыть арбитраж
         // арбитраж => кто проголосовал
         mapping(address => bool) voitedArbiter;
@@ -72,7 +72,7 @@ contract SitisArbitration {
         uint256 _buyerId,
         uint256 _serviceOwner,
         uint256 _purchasedId,
-        uint8 _limit_percent,
+        uint16 _limit_percent,
         uint8 _limit_days
 
     ) public
@@ -158,13 +158,12 @@ contract SitisArbitration {
         return true;
     }
 
-    function validCloseArbitration(uint arbiterId) internal view returns (bool) {
+    function validCloseArbitration(uint arbiterId) internal view  {
         require(arbiterId <= arbiterCount && arbiterId > 0, "not valid Id");
         Arbitration storage a = arbiterStats[arbiterId];
         uint percenVoited = percent(a.voitedCount, arbiterListCount, 3);
-        // uint diff = (now - a.created) / 60 / 60 / 24;  // days
-        require(percenVoited > a.limit_percent * 10, "not enough voited");
-        // && diff <= a.limit_days
-        return true;
+        uint diff = (now - a.created) / 60 / 60 / 24;  // days
+        uint _limit_percent = a.limit_percent * 10;
+        require(percenVoited > _limit_percent  && diff <= a.limit_days, "not enough voited");
     }
 }

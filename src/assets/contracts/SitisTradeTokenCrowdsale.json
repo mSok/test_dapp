@@ -123,24 +123,24 @@
       "type": "event"
     }
   ],
-  "bytecode": "0x608060405234801561001057600080fd5b5060405160608061041c8339810160409081528151602083015191909201518282826000831161003f57600080fd5b600160a060020a038216151561005457600080fd5b600160a060020a038116151561006957600080fd5b60029290925560018054600160a060020a03928316600160a060020a0319918216179091556000805493909216921691909117905550505061036c806100b06000396000f30060806040526004361061006c5763ffffffff7c01000000000000000000000000000000000000000000000000000000006000350416632c4e722e81146100775780634042b66f1461009e578063521eb273146100b3578063ec8ac4d8146100e4578063fc0c546a146100f8575b6100753361010d565b005b34801561008357600080fd5b5061008c6101af565b60408051918252519081900360200190f35b3480156100aa57600080fd5b5061008c6101b5565b3480156100bf57600080fd5b506100c86101bb565b60408051600160a060020a039092168252519081900360200190f35b610075600160a060020a036004351661010d565b34801561010457600080fd5b506100c86101ca565b34600061011a83836101d9565b610123826101fe565b600354909150610139908363ffffffff61021b16565b6003556101468382610228565b60408051838152602081018390528151600160a060020a0386169233927f623b3804fa71d67900d064613da8f94b9617215ee90799290593e1745087ad18929081900390910190a361019883836101fa565b6101a0610232565b6101aa83836101fa565b505050565b60025481565b60035481565b600154600160a060020a031681565b600054600160a060020a031681565b600160a060020a03821615156101ee57600080fd5b8015156101fa57600080fd5b5050565b60006102156002548361026e90919063ffffffff16565b92915050565b8181018281101561021557fe5b6101fa8282610297565b600154604051600160a060020a03909116903480156108fc02916000818181858888f1935050505015801561026b573d6000803e3d6000fd5b50565b600082151561027f57506000610215565b5081810281838281151561028f57fe5b041461021557fe5b60008054604080517f40c10f19000000000000000000000000000000000000000000000000000000008152600160a060020a03868116600483015260248201869052915191909216926340c10f1992604480820193602093909283900390910190829087803b15801561030957600080fd5b505af115801561031d573d6000803e3d6000fd5b505050506040513d602081101561033357600080fd5b505115156101fa57600080fd00a165627a7a72305820143ff611834020b992a8786c81c8ffe4b041ae4cac3c467027d56a725a9780970029",
-  "deployedBytecode": "0x60806040526004361061006c5763ffffffff7c01000000000000000000000000000000000000000000000000000000006000350416632c4e722e81146100775780634042b66f1461009e578063521eb273146100b3578063ec8ac4d8146100e4578063fc0c546a146100f8575b6100753361010d565b005b34801561008357600080fd5b5061008c6101af565b60408051918252519081900360200190f35b3480156100aa57600080fd5b5061008c6101b5565b3480156100bf57600080fd5b506100c86101bb565b60408051600160a060020a039092168252519081900360200190f35b610075600160a060020a036004351661010d565b34801561010457600080fd5b506100c86101ca565b34600061011a83836101d9565b610123826101fe565b600354909150610139908363ffffffff61021b16565b6003556101468382610228565b60408051838152602081018390528151600160a060020a0386169233927f623b3804fa71d67900d064613da8f94b9617215ee90799290593e1745087ad18929081900390910190a361019883836101fa565b6101a0610232565b6101aa83836101fa565b505050565b60025481565b60035481565b600154600160a060020a031681565b600054600160a060020a031681565b600160a060020a03821615156101ee57600080fd5b8015156101fa57600080fd5b5050565b60006102156002548361026e90919063ffffffff16565b92915050565b8181018281101561021557fe5b6101fa8282610297565b600154604051600160a060020a03909116903480156108fc02916000818181858888f1935050505015801561026b573d6000803e3d6000fd5b50565b600082151561027f57506000610215565b5081810281838281151561028f57fe5b041461021557fe5b60008054604080517f40c10f19000000000000000000000000000000000000000000000000000000008152600160a060020a03868116600483015260248201869052915191909216926340c10f1992604480820193602093909283900390910190829087803b15801561030957600080fd5b505af115801561031d573d6000803e3d6000fd5b505050506040513d602081101561033357600080fd5b505115156101fa57600080fd00a165627a7a72305820143ff611834020b992a8786c81c8ffe4b041ae4cac3c467027d56a725a9780970029",
+  "bytecode": "0x608060405234801561001057600080fd5b5060405160608061041c8339810160409081528151602083015191909201518282826000831161003f57600080fd5b600160a060020a038216151561005457600080fd5b600160a060020a038116151561006957600080fd5b60029290925560018054600160a060020a03928316600160a060020a0319918216179091556000805493909216921691909117905550505061036c806100b06000396000f30060806040526004361061006c5763ffffffff7c01000000000000000000000000000000000000000000000000000000006000350416632c4e722e81146100775780634042b66f1461009e578063521eb273146100b3578063ec8ac4d8146100e4578063fc0c546a146100f8575b6100753361010d565b005b34801561008357600080fd5b5061008c6101af565b60408051918252519081900360200190f35b3480156100aa57600080fd5b5061008c6101b5565b3480156100bf57600080fd5b506100c86101bb565b60408051600160a060020a039092168252519081900360200190f35b610075600160a060020a036004351661010d565b34801561010457600080fd5b506100c86101ca565b34600061011a83836101d9565b610123826101fe565b600354909150610139908363ffffffff61021b16565b6003556101468382610228565b60408051838152602081018390528151600160a060020a0386169233927f623b3804fa71d67900d064613da8f94b9617215ee90799290593e1745087ad18929081900390910190a361019883836101fa565b6101a0610232565b6101aa83836101fa565b505050565b60025481565b60035481565b600154600160a060020a031681565b600054600160a060020a031681565b600160a060020a03821615156101ee57600080fd5b8015156101fa57600080fd5b5050565b60006102156002548361026e90919063ffffffff16565b92915050565b8181018281101561021557fe5b6101fa8282610297565b600154604051600160a060020a03909116903480156108fc02916000818181858888f1935050505015801561026b573d6000803e3d6000fd5b50565b600082151561027f57506000610215565b5081810281838281151561028f57fe5b041461021557fe5b60008054604080517f40c10f19000000000000000000000000000000000000000000000000000000008152600160a060020a03868116600483015260248201869052915191909216926340c10f1992604480820193602093909283900390910190829087803b15801561030957600080fd5b505af115801561031d573d6000803e3d6000fd5b505050506040513d602081101561033357600080fd5b505115156101fa57600080fd00a165627a7a7230582082bb2a5bdc3459c9c948c155275f73b73b82c4a5598d257912834bc197ece9a20029",
+  "deployedBytecode": "0x60806040526004361061006c5763ffffffff7c01000000000000000000000000000000000000000000000000000000006000350416632c4e722e81146100775780634042b66f1461009e578063521eb273146100b3578063ec8ac4d8146100e4578063fc0c546a146100f8575b6100753361010d565b005b34801561008357600080fd5b5061008c6101af565b60408051918252519081900360200190f35b3480156100aa57600080fd5b5061008c6101b5565b3480156100bf57600080fd5b506100c86101bb565b60408051600160a060020a039092168252519081900360200190f35b610075600160a060020a036004351661010d565b34801561010457600080fd5b506100c86101ca565b34600061011a83836101d9565b610123826101fe565b600354909150610139908363ffffffff61021b16565b6003556101468382610228565b60408051838152602081018390528151600160a060020a0386169233927f623b3804fa71d67900d064613da8f94b9617215ee90799290593e1745087ad18929081900390910190a361019883836101fa565b6101a0610232565b6101aa83836101fa565b505050565b60025481565b60035481565b600154600160a060020a031681565b600054600160a060020a031681565b600160a060020a03821615156101ee57600080fd5b8015156101fa57600080fd5b5050565b60006102156002548361026e90919063ffffffff16565b92915050565b8181018281101561021557fe5b6101fa8282610297565b600154604051600160a060020a03909116903480156108fc02916000818181858888f1935050505015801561026b573d6000803e3d6000fd5b50565b600082151561027f57506000610215565b5081810281838281151561028f57fe5b041461021557fe5b60008054604080517f40c10f19000000000000000000000000000000000000000000000000000000008152600160a060020a03868116600483015260248201869052915191909216926340c10f1992604480820193602093909283900390910190829087803b15801561030957600080fd5b505af115801561031d573d6000803e3d6000fd5b505050506040513d602081101561033357600080fd5b505115156101fa57600080fd00a165627a7a7230582082bb2a5bdc3459c9c948c155275f73b73b82c4a5598d257912834bc197ece9a20029",
   "sourceMap": "137:258:5:-;;;196:192;8:9:-1;5:2;;;30:1;27;20:12;5:2;196:192:5;;;;;;;;;;;;;;;;;;;;;;;;;;;;1952:1:6;1944:9;;1936:18;;;;;;-1:-1:-1;;;;;1968:21:6;;;;1960:30;;;;;;-1:-1:-1;;;;;2004:20:6;;;;1996:29;;;;;;2032:4;:12;;;;2050:6;:16;;-1:-1:-1;;;;;2050:16:6;;;-1:-1:-1;;;;;;2050:16:6;;;;;;;:6;2072:14;;;;;;;;;;;;;;-1:-1:-1;;;137:258:5;;;;;;",
   "deployedSourceMap": "137:258:5:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2321:21:6;2331:10;2321:9;:21::i;:::-;137:258:5;1234:19:6;;8:9:-1;5:2;;;30:1;27;20:12;5:2;1234:19:6;;;;;;;;;;;;;;;;;;;;1284:24;;8:9:-1;5:2;;;30:1;27;20:12;5:2;1284:24:6;;;;932:21;;8:9:-1;5:2;;;30:1;27;20:12;5:2;932:21:6;;;;;;;;-1:-1:-1;;;;;932:21:6;;;;;;;;;;;;;;2483:577;;-1:-1:-1;;;;;2483:577:6;;;;;870:18;;8:9:-1;5:2;;;30:1;27;20:12;5:2;870:18:6;;;;2483:577;2566:9;2546:17;2581:45;2602:12;2566:9;2581:20;:45::i;:::-;2694:26;2710:9;2694:15;:26::i;:::-;2759:9;;2677:43;;-1:-1:-1;2759:24:6;;2773:9;2759:24;:13;:24;:::i;:::-;2747:9;:36;2790:38;2807:12;2821:6;2790:16;:38::i;:::-;2839:88;;;;;;;;;;;;;;-1:-1:-1;;;;;2839:88:6;;;2860:10;;2839:88;;;;;;;;;;;2934:47;2957:12;2971:9;2934:22;:47::i;:::-;2988:15;:13;:15::i;:::-;3009:46;3031:12;3045:9;3009:21;:46::i;:::-;2483:577;;;:::o;1234:19::-;;;;:::o;1284:24::-;;;;:::o;932:21::-;;;-1:-1:-1;;;;;932:21:6;;:::o;870:18::-;;;-1:-1:-1;;;;;870:18:6;;:::o;3484:175::-;-1:-1:-1;;;;;3597:26:6;;;;3589:35;;;;;;3638:15;;;3630:24;;;;;;3484:175;;:::o;5497:121::-;5569:7;5593:20;5608:4;;5593:10;:14;;:20;;;;:::i;:::-;5586:27;5497:121;-1:-1:-1;;5497:121:6:o;1214:123:8:-;1293:5;;;1311:6;;;;1304:14;;;4725:150:6;4828:42;4843:12;4857;4828:14;:42::i;5697:71::-;5737:6;;:26;;-1:-1:-1;;;;;5737:6:6;;;;5753:9;5737:26;;;;;:6;:26;:6;:26;5753:9;5737:6;:26;;;;;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;5737:26:6;5697:71::o;203:373:8:-;261:9;487:6;;483:35;;;-1:-1:-1;510:1:8;503:8;;483:35;-1:-1:-1;528:5:8;;;532:1;528;:5;546;;;;;;;;:10;539:18;;;503:168:7;626:5;;;612:53;;;;;;-1:-1:-1;;;;;612:53:7;;;;;;;;;;;;;;;626:5;;;;;612:25;;:53;;;;;;;;;;;;;;;;;;626:5;612:53;;;5:2:-1;;;;30:1;27;20:12;5:2;612:53:7;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;612:53:7;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;612:53:7;604:62;;;;;;",
   "source": "pragma solidity ^0.4.19;\n\nimport './SitisTradeToken.sol';\nimport 'zeppelin-solidity/contracts/crowdsale/emission/MintedCrowdsale.sol';\n\n\ncontract SitisTradeTokenCrowdsale is MintedCrowdsale {\n    function SitisTradeTokenCrowdsale\n        (\n        uint256 _rate,\n        address _wallet,\n        MintableToken _token\n        ) Crowdsale(_rate, _wallet, _token)\n        public {\n\n        }\n    \n}\n",
-  "sourcePath": "/home/local/REGION/mi.sokoluk/code/blockchainapp/contracts/SitisTradeTokenCrowdsale.sol",
+  "sourcePath": "/home/sok/code/test_dapp/contracts/SitisTradeTokenCrowdsale.sol",
   "ast": {
-    "absolutePath": "/home/local/REGION/mi.sokoluk/code/blockchainapp/contracts/SitisTradeTokenCrowdsale.sol",
+    "absolutePath": "/home/sok/code/test_dapp/contracts/SitisTradeTokenCrowdsale.sol",
     "exportedSymbols": {
       "SitisTradeTokenCrowdsale": [
-        1770
+        1752
       ]
     },
-    "id": 1771,
+    "id": 1753,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 1750,
+        "id": 1732,
         "literals": [
           "solidity",
           "^",
@@ -151,12 +151,12 @@
         "src": "0:24:5"
       },
       {
-        "absolutePath": "/home/local/REGION/mi.sokoluk/code/blockchainapp/contracts/SitisTradeToken.sol",
+        "absolutePath": "/home/sok/code/test_dapp/contracts/SitisTradeToken.sol",
         "file": "./SitisTradeToken.sol",
-        "id": 1751,
+        "id": 1733,
         "nodeType": "ImportDirective",
-        "scope": 1771,
-        "sourceUnit": 1749,
+        "scope": 1753,
+        "sourceUnit": 1731,
         "src": "26:31:5",
         "symbolAliases": [],
         "unitAlias": ""
@@ -164,10 +164,10 @@
       {
         "absolutePath": "zeppelin-solidity/contracts/crowdsale/emission/MintedCrowdsale.sol",
         "file": "zeppelin-solidity/contracts/crowdsale/emission/MintedCrowdsale.sol",
-        "id": 1752,
+        "id": 1734,
         "nodeType": "ImportDirective",
-        "scope": 1771,
-        "sourceUnit": 2020,
+        "scope": 1753,
+        "sourceUnit": 2002,
         "src": "58:76:5",
         "symbolAliases": [],
         "unitAlias": ""
@@ -178,46 +178,46 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 1753,
+              "id": 1735,
               "name": "MintedCrowdsale",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 2019,
+              "referencedDeclaration": 2001,
               "src": "174:15:5",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_MintedCrowdsale_$2019",
+                "typeIdentifier": "t_contract$_MintedCrowdsale_$2001",
                 "typeString": "contract MintedCrowdsale"
               }
             },
-            "id": 1754,
+            "id": 1736,
             "nodeType": "InheritanceSpecifier",
             "src": "174:15:5"
           }
         ],
         "contractDependencies": [
-          1994,
-          2019
+          1976,
+          2001
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 1770,
+        "id": 1752,
         "linearizedBaseContracts": [
-          1770,
-          2019,
-          1994
+          1752,
+          2001,
+          1976
         ],
         "name": "SitisTradeTokenCrowdsale",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 1768,
+              "id": 1750,
               "nodeType": "Block",
               "src": "376:12:5",
               "statements": []
             },
             "documentation": null,
-            "id": 1769,
+            "id": 1751,
             "implemented": true,
             "isConstructor": true,
             "isDeclaredConst": false,
@@ -226,11 +226,11 @@
                 "arguments": [
                   {
                     "argumentTypes": null,
-                    "id": 1763,
+                    "id": 1745,
                     "name": "_rate",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 1756,
+                    "referencedDeclaration": 1738,
                     "src": "337:5:5",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
@@ -239,11 +239,11 @@
                   },
                   {
                     "argumentTypes": null,
-                    "id": 1764,
+                    "id": 1746,
                     "name": "_wallet",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 1758,
+                    "referencedDeclaration": 1740,
                     "src": "344:7:5",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -252,29 +252,29 @@
                   },
                   {
                     "argumentTypes": null,
-                    "id": 1765,
+                    "id": 1747,
                     "name": "_token",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 1760,
+                    "referencedDeclaration": 1742,
                     "src": "353:6:5",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_MintableToken_$2476",
+                      "typeIdentifier": "t_contract$_MintableToken_$2458",
                       "typeString": "contract MintableToken"
                     }
                   }
                 ],
-                "id": 1766,
+                "id": 1748,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 1762,
+                  "id": 1744,
                   "name": "Crowdsale",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 1994,
+                  "referencedDeclaration": 1976,
                   "src": "327:9:5",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_type$_t_contract$_Crowdsale_$1994_$",
+                    "typeIdentifier": "t_type$_t_contract$_Crowdsale_$1976_$",
                     "typeString": "type(contract Crowdsale)"
                   }
                 },
@@ -285,15 +285,15 @@
             "name": "SitisTradeTokenCrowdsale",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1761,
+              "id": 1743,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1756,
+                  "id": 1738,
                   "name": "_rate",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1769,
+                  "scope": 1751,
                   "src": "248:13:5",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -302,7 +302,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1755,
+                    "id": 1737,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "248:7:5",
@@ -316,10 +316,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 1758,
+                  "id": 1740,
                   "name": "_wallet",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1769,
+                  "scope": 1751,
                   "src": "271:15:5",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -328,7 +328,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1757,
+                    "id": 1739,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "271:7:5",
@@ -342,26 +342,26 @@
                 },
                 {
                   "constant": false,
-                  "id": 1760,
+                  "id": 1742,
                   "name": "_token",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1769,
+                  "scope": 1751,
                   "src": "296:20:5",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_MintableToken_$2476",
+                    "typeIdentifier": "t_contract$_MintableToken_$2458",
                     "typeString": "contract MintableToken"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 1759,
+                    "id": 1741,
                     "name": "MintableToken",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 2476,
+                    "referencedDeclaration": 2458,
                     "src": "296:13:5",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_MintableToken_$2476",
+                      "typeIdentifier": "t_contract$_MintableToken_$2458",
                       "typeString": "contract MintableToken"
                     }
                   },
@@ -373,36 +373,36 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 1767,
+              "id": 1749,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "376:0:5"
             },
-            "scope": 1770,
+            "scope": 1752,
             "src": "196:192:5",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 1771,
+        "scope": 1753,
         "src": "137:258:5"
       }
     ],
     "src": "0:396:5"
   },
   "legacyAST": {
-    "absolutePath": "/home/local/REGION/mi.sokoluk/code/blockchainapp/contracts/SitisTradeTokenCrowdsale.sol",
+    "absolutePath": "/home/sok/code/test_dapp/contracts/SitisTradeTokenCrowdsale.sol",
     "exportedSymbols": {
       "SitisTradeTokenCrowdsale": [
-        1770
+        1752
       ]
     },
-    "id": 1771,
+    "id": 1753,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 1750,
+        "id": 1732,
         "literals": [
           "solidity",
           "^",
@@ -413,12 +413,12 @@
         "src": "0:24:5"
       },
       {
-        "absolutePath": "/home/local/REGION/mi.sokoluk/code/blockchainapp/contracts/SitisTradeToken.sol",
+        "absolutePath": "/home/sok/code/test_dapp/contracts/SitisTradeToken.sol",
         "file": "./SitisTradeToken.sol",
-        "id": 1751,
+        "id": 1733,
         "nodeType": "ImportDirective",
-        "scope": 1771,
-        "sourceUnit": 1749,
+        "scope": 1753,
+        "sourceUnit": 1731,
         "src": "26:31:5",
         "symbolAliases": [],
         "unitAlias": ""
@@ -426,10 +426,10 @@
       {
         "absolutePath": "zeppelin-solidity/contracts/crowdsale/emission/MintedCrowdsale.sol",
         "file": "zeppelin-solidity/contracts/crowdsale/emission/MintedCrowdsale.sol",
-        "id": 1752,
+        "id": 1734,
         "nodeType": "ImportDirective",
-        "scope": 1771,
-        "sourceUnit": 2020,
+        "scope": 1753,
+        "sourceUnit": 2002,
         "src": "58:76:5",
         "symbolAliases": [],
         "unitAlias": ""
@@ -440,46 +440,46 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 1753,
+              "id": 1735,
               "name": "MintedCrowdsale",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 2019,
+              "referencedDeclaration": 2001,
               "src": "174:15:5",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_MintedCrowdsale_$2019",
+                "typeIdentifier": "t_contract$_MintedCrowdsale_$2001",
                 "typeString": "contract MintedCrowdsale"
               }
             },
-            "id": 1754,
+            "id": 1736,
             "nodeType": "InheritanceSpecifier",
             "src": "174:15:5"
           }
         ],
         "contractDependencies": [
-          1994,
-          2019
+          1976,
+          2001
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 1770,
+        "id": 1752,
         "linearizedBaseContracts": [
-          1770,
-          2019,
-          1994
+          1752,
+          2001,
+          1976
         ],
         "name": "SitisTradeTokenCrowdsale",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 1768,
+              "id": 1750,
               "nodeType": "Block",
               "src": "376:12:5",
               "statements": []
             },
             "documentation": null,
-            "id": 1769,
+            "id": 1751,
             "implemented": true,
             "isConstructor": true,
             "isDeclaredConst": false,
@@ -488,11 +488,11 @@
                 "arguments": [
                   {
                     "argumentTypes": null,
-                    "id": 1763,
+                    "id": 1745,
                     "name": "_rate",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 1756,
+                    "referencedDeclaration": 1738,
                     "src": "337:5:5",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
@@ -501,11 +501,11 @@
                   },
                   {
                     "argumentTypes": null,
-                    "id": 1764,
+                    "id": 1746,
                     "name": "_wallet",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 1758,
+                    "referencedDeclaration": 1740,
                     "src": "344:7:5",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -514,29 +514,29 @@
                   },
                   {
                     "argumentTypes": null,
-                    "id": 1765,
+                    "id": 1747,
                     "name": "_token",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 1760,
+                    "referencedDeclaration": 1742,
                     "src": "353:6:5",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_MintableToken_$2476",
+                      "typeIdentifier": "t_contract$_MintableToken_$2458",
                       "typeString": "contract MintableToken"
                     }
                   }
                 ],
-                "id": 1766,
+                "id": 1748,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 1762,
+                  "id": 1744,
                   "name": "Crowdsale",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 1994,
+                  "referencedDeclaration": 1976,
                   "src": "327:9:5",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_type$_t_contract$_Crowdsale_$1994_$",
+                    "typeIdentifier": "t_type$_t_contract$_Crowdsale_$1976_$",
                     "typeString": "type(contract Crowdsale)"
                   }
                 },
@@ -547,15 +547,15 @@
             "name": "SitisTradeTokenCrowdsale",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1761,
+              "id": 1743,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1756,
+                  "id": 1738,
                   "name": "_rate",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1769,
+                  "scope": 1751,
                   "src": "248:13:5",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -564,7 +564,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1755,
+                    "id": 1737,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "248:7:5",
@@ -578,10 +578,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 1758,
+                  "id": 1740,
                   "name": "_wallet",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1769,
+                  "scope": 1751,
                   "src": "271:15:5",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -590,7 +590,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1757,
+                    "id": 1739,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "271:7:5",
@@ -604,26 +604,26 @@
                 },
                 {
                   "constant": false,
-                  "id": 1760,
+                  "id": 1742,
                   "name": "_token",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1769,
+                  "scope": 1751,
                   "src": "296:20:5",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_MintableToken_$2476",
+                    "typeIdentifier": "t_contract$_MintableToken_$2458",
                     "typeString": "contract MintableToken"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 1759,
+                    "id": 1741,
                     "name": "MintableToken",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 2476,
+                    "referencedDeclaration": 2458,
                     "src": "296:13:5",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_MintableToken_$2476",
+                      "typeIdentifier": "t_contract$_MintableToken_$2458",
                       "typeString": "contract MintableToken"
                     }
                   },
@@ -635,19 +635,19 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 1767,
+              "id": 1749,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "376:0:5"
             },
-            "scope": 1770,
+            "scope": 1752,
             "src": "196:192:5",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 1771,
+        "scope": 1753,
         "src": "137:258:5"
       }
     ],
@@ -659,5 +659,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.1",
-  "updatedAt": "2018-08-17T09:02:37.410Z"
+  "updatedAt": "2018-08-18T14:24:13.328Z"
 }
