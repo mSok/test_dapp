@@ -1,10 +1,18 @@
 // Контракт для арбитража
 pragma solidity ^0.4.17;
 
+
+// abstract methods
+contract SitisPlaceMarketInt {
+    function closePurchase (uint256 _purchaseId) public returns (bool result);
+    function cancelService (uint256 _purchaseId) public returns (bool result);
+}
+
+
 contract SitisArbitration {
 
-    // solidity сходит с ума, при переходе от положительного вк отрицательному. 
-    // Будем считать MID_VOTE - начальным занчением голосования 
+    // solidity сходит с ума, при переходе от положительного к отрицательному.
+    // Будем считать MID_VOTE - начальным занчением голосования
     uint16 constant MID_VOTE = 2000;
     address public owner;
     // адрес контракта SitisServicePlacemarkert
@@ -38,13 +46,13 @@ contract SitisArbitration {
      // Арбитраж
     struct Arbitration {
         uint256 id;
-        uint256 buyerId;
-        uint256 serviceOwner;
+        address buyerId;
+        address serviceOwner;
         uint256 purchasedId;
         bool closed;
         uint created;
         uint16 limit_percent;  // минимальное кол-во голосов для закрытия сделки
-        uint8 limit_days;  // кол-во дней через которое можно однозначно закрыть арбитраж
+        uint16 limit_days;  // кол-во дней через которое можно однозначно закрыть арбитраж
         // арбитраж => кто проголосовал
         mapping(address => bool) voitedArbiter;
         uint voitedCount;
@@ -69,12 +77,11 @@ contract SitisArbitration {
 
     // создать арбитраж по сделке
     function createArbitration (
-        uint256 _buyerId,
-        uint256 _serviceOwner,
+        address _buyerId,
+        address _serviceOwner,
         uint256 _purchasedId,
         uint16 _limit_percent,
-        uint8 _limit_days
-
+        uint16 _limit_days
     ) public
         returns (uint256 arbiterId) {
         // только площадка может создавать или автор контракта
@@ -121,18 +128,18 @@ contract SitisArbitration {
         validCloseArbitration(arbitrationId);
         Arbitration storage a = arbiterStats[arbitrationId];
         a.closed = true;
-        if (a.voitedCount <= 2000){
+        SitisPlaceMarketInt _placemarketContract = SitisPlaceMarketInt(sitisServicePlacemarkert);
+        bool res = false;
+        if (a.voitedCount <= 2000) {
             // закрыть покупку, перечислить средства продавцу.
             // function closePurchase (uint256 _purchaseId)
-            // TODO: возможно вызов наджо переписать вотт так
-            //  if (!addressB.call.gas(0).value(1 ether)(bytes4(sha3("getX()")))) {
-            //  throw;
-            sitisServicePlacemarkert.call.gas(1000000)("closePurchase", a.purchasedId);
+            res = _placemarketContract.closePurchase(a.purchasedId);
         } else {
             // отправляем средства покупателю
-            sitisServicePlacemarkert.call.gas(1000000)("cancelService", a.purchasedId);
+            res = _placemarketContract.cancelService(a.purchasedId);
         }
         emit closedArbitrationEvent(arbitrationId);
+        return res;
     }
 
     // вычислить процент целочисленный с точностью
@@ -164,6 +171,6 @@ contract SitisArbitration {
         uint percenVoited = percent(a.voitedCount, arbiterListCount, 3);
         uint diff = (now - a.created) / 60 / 60 / 24;  // days
         uint _limit_percent = a.limit_percent * 10;
-        require(percenVoited > _limit_percent  && diff <= a.limit_days, "not enough voited");
+        require(percenVoited >= _limit_percent && diff <= a.limit_days, "not enough voited");
     }
 }

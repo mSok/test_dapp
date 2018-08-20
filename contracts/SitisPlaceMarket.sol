@@ -1,6 +1,17 @@
 // Контракт для услуг на площадки SitisPlaceMarket
 pragma solidity ^0.4.17;
 
+contract SitisArbitration {
+    function createArbitration (
+        address _buyerId,
+        address _serviceOwner,
+        uint256 _purchasedId,
+        uint16 _limit_percent,
+        uint16 _limit_days
+    )
+        public returns (uint256 arbiterId);
+}
+
 contract SitisPlaceMarket {
     // создтель контракта
     address public owner;
@@ -122,7 +133,8 @@ contract SitisPlaceMarket {
     // закрыть покупку, перечислить средства продавцу.
     function closePurchase (
         uint256 _purchaseId
-    ) public {
+    ) public 
+        returns (bool result){
         purchasedService storage pc = purchases[_purchaseId];
         require(msg.sender == pc.buyer || msg.sender == arbiterWallet);
         // закрыть можно только сделки в "рабочем" или покупатель согласился статусе
@@ -138,20 +150,21 @@ contract SitisPlaceMarket {
             _purchaseId,
             amount
         );
+        return true;
     }
     // купить услугу
     function buyService (
         uint256 _serviceId,
         uint256 _cnt
-    ) preValidatePurchase payable public
+    ) payable public
         returns (uint256 purchasesId) {
         Service storage c = services[_serviceId];
-        // preValidatePurchase(
-        //     c.serviceOwner,
-        //     msg.value,
-        //     c.id,
-        //     _cnt
-        // );
+        preValidatePurchase(
+            c.serviceOwner,
+            msg.value,
+            c.id,
+            _cnt
+        );
         require(c.closed == false);
         purchasesCount ++;
         purchasedService storage pc = purchases[purchasesCount];
@@ -175,7 +188,8 @@ contract SitisPlaceMarket {
     // отмена покупки
     function cancelService (
         uint256 _purchaseId
-    ) public {
+    ) public
+        returns (bool result) {
         purchasedService storage pc = purchases[_purchaseId];
         Service storage c = services[pc.serviceId];
         require(c.id != 0);
@@ -204,6 +218,14 @@ contract SitisPlaceMarket {
             address(pc.buyer).transfer(amount);
         } else {
             pc.status = 2; // арбитраж
+            SitisArbitration _arbiterContract = SitisArbitration(arbiterWallet);
+            _arbiterContract.createArbitration(
+                pc.buyer,
+                c.serviceOwner,
+                _purchaseId,
+                100,
+                30
+            );
         }
         // сохраняем статус покупки
         purchases[_purchaseId] = pc;
@@ -215,18 +237,16 @@ contract SitisPlaceMarket {
             pc.cancelBuyer,
             pc.status
         );
-        return;
+        return true;
     }
 
     // validate purchase
-    // TODO transfer to modifire
-    modifier preValidatePurchase(
+    function preValidatePurchase(
         address _beneficiary,
         uint256 _weiAmount,
         uint256 _serviceId,
         uint256 _purchasesCount
-    )
-        internal
+    ) internal
     {
         require(_beneficiary != address(0), "Beneficiar is empty!");
         require(_weiAmount != 0, "Amount is empty!");

@@ -1,4 +1,4 @@
-/*global it contract beforeEach artifacts*/
+/* global it contract beforeEach artifacts */
 
 const expect = require('chai')
   .use(require('chai-as-promised')).expect
