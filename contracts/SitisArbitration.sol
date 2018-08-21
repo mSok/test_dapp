@@ -36,6 +36,12 @@ contract SitisArbitration {
         require(msg.sender == owner, "Only owner");
         _;
     }
+    
+    modifier onlyPlaceMarket() {
+        // только площадка может создавать или автор контракта
+        require(msg.sender == sitisServicePlacemarkert || msg.sender == owner, "Only PlaceMarket");
+        _;
+    }
 
     function addArbiter(
         address _newArbiterWalet
@@ -56,17 +62,20 @@ contract SitisArbitration {
         // арбитраж => кто проголосовал
         mapping(address => bool) voitedArbiter;
         uint voitedCount;
-
-        // mapping(uint => address[]) voitedArbiter;
     }
      // Создан спор для арбитража
     event createdArbitrationEvent(
         uint256 id
     );
-    // Создан спор для арбитража
+    // Арбитраж закрыт
     event closedArbitrationEvent(
         uint256 id
     );
+    event voteArbitrationEvent(
+        uint id,
+        uint16 voteRes
+    );
+
     // маппинг арбитражей
     mapping (uint256 => Arbitration) public arbiterStats;
     // кол-во арбитражей
@@ -82,12 +91,9 @@ contract SitisArbitration {
         uint256 _purchasedId,
         uint16 _limit_percent,
         uint16 _limit_days
-    ) public
+    ) public onlyPlaceMarket
         returns (uint256 arbiterId) {
-        // только площадка может создавать или автор контракта
-        // require(msg.sender == sitisServicePlacemarkert || msg.sender == owner, "not access");
         arbiterCount++;
-
         arbiterStats[arbiterCount] = Arbitration({
             id: arbiterCount,
             buyerId : _buyerId,
@@ -119,6 +125,10 @@ contract SitisArbitration {
         } else {
             voitedResults[arbitrationId] -= 1;
         }
+        emit voteArbitrationEvent(
+            arbitrationId,
+            voitedResults[arbitrationId]
+        );
         return voitedResults[arbitrationId];
     }
 

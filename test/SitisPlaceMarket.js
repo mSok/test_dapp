@@ -3,6 +3,12 @@
 const expect = require('chai')
   .use(require('chai-as-promised')).expect
 
+const BigNumber = web3.BigNumber
+const should = require('chai')
+  .use(require('chai-as-promised'))
+  .use(require('chai-bignumber')(BigNumber))
+  .should()
+
 var SitisPlaceMarket = artifacts.require('./SitisPlaceMarket.sol')
 
 contract('SitisPlaceMarket', function (accounts) {
