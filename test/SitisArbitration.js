@@ -12,7 +12,7 @@ var SitisArbitration = artifacts.require('./SitisArbitration.sol')
 
 contract('SitisArbitration', function (accounts) {
   // TODO: пока какой то.
-  const marketplace = '0x103c0483c42c63706e4f1e3bb2fd9e827f9c7a37'
+  const marketplace = ''
   const arbiterList = [accounts[0], accounts[1], accounts[2]]
   const noInArbiter = accounts[3]
   const testBuyer = '0xF0109fC8DF283027b6285cc889F5aA624EaC1F55'

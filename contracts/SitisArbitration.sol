@@ -47,6 +47,16 @@ contract SitisArbitration {
         address _newArbiterWalet
     ) public onlyOwner {
         arbiterList[_newArbiterWalet] = true;
+        arbiterListCount += 1;
+    }
+
+    function delArbiter(
+        address _arbiterWalet
+    ) public onlyOwner {
+        if (arbiterList[_arbiterWalet] == true){
+            arbiterListCount -= 1;
+            arbiterList[_arbiterWalet] = false;
+        }
     }
 
      // Арбитраж
@@ -182,5 +192,10 @@ contract SitisArbitration {
         uint diff = (now - a.created) / 60 / 60 / 24;  // days
         uint _limit_percent = a.limit_percent * 10;
         require(percenVoited >= _limit_percent && diff <= a.limit_days, "not enough voited");
+    }
+
+    function changeOwner(address newOwner) public {
+        if (msg.sender != owner) revert("Only owner");
+        owner = newOwner;
     }
 }

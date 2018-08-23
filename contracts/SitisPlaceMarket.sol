@@ -269,4 +269,8 @@ contract SitisPlaceMarket {
     ) public onlyOwner {
         arbiterWallet = _newArbiterWalet;
     }
+    function changeOwner(address newOwner) public {
+        if (msg.sender != owner) revert("Only owner");
+        owner = newOwner;
+    }
 }
