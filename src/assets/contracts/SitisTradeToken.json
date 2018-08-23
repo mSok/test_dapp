@@ -413,14 +413,14 @@
     "absolutePath": "/home/local/REGION/mi.sokoluk/code/blockchainapp/contracts/SitisTradeToken.sol",
     "exportedSymbols": {
       "SitisTradeToken": [
-        1776
+        1912
       ]
     },
-    "id": 1777,
+    "id": 1913,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 1763,
+        "id": 1899,
         "literals": [
           "solidity",
           "^",
@@ -433,10 +433,10 @@
       {
         "absolutePath": "zeppelin-solidity/contracts/token/ERC20/MintableToken.sol",
         "file": "zeppelin-solidity/contracts/token/ERC20/MintableToken.sol",
-        "id": 1764,
+        "id": 1900,
         "nodeType": "ImportDirective",
-        "scope": 1777,
-        "sourceUnit": 2505,
+        "scope": 1913,
+        "sourceUnit": 2641,
         "src": "25:67:4",
         "symbolAliases": [],
         "unitAlias": ""
@@ -447,51 +447,51 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 1765,
+              "id": 1901,
               "name": "MintableToken",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 2504,
+              "referencedDeclaration": 2640,
               "src": "121:13:4",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_MintableToken_$2504",
+                "typeIdentifier": "t_contract$_MintableToken_$2640",
                 "typeString": "contract MintableToken"
               }
             },
-            "id": 1766,
+            "id": 1902,
             "nodeType": "InheritanceSpecifier",
             "src": "121:13:4"
           }
         ],
         "contractDependencies": [
-          2227,
-          2323,
-          2366,
-          2398,
-          2504,
-          2751
+          2363,
+          2459,
+          2502,
+          2534,
+          2640,
+          2887
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 1776,
+        "id": 1912,
         "linearizedBaseContracts": [
-          1776,
-          2504,
-          2227,
-          2751,
-          2323,
-          2366,
-          2398
+          1912,
+          2640,
+          2363,
+          2887,
+          2459,
+          2502,
+          2534
         ],
         "name": "SitisTradeToken",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": true,
-            "id": 1769,
+            "id": 1905,
             "name": "name",
             "nodeType": "VariableDeclaration",
-            "scope": 1776,
+            "scope": 1912,
             "src": "141:49:4",
             "stateVariable": true,
             "storageLocation": "default",
@@ -500,7 +500,7 @@
               "typeString": "string"
             },
             "typeName": {
-              "id": 1767,
+              "id": 1903,
               "name": "string",
               "nodeType": "ElementaryTypeName",
               "src": "141:6:4",
@@ -512,7 +512,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "536974697320547261646520546f6b656e",
-              "id": 1768,
+              "id": 1904,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -531,10 +531,10 @@
           },
           {
             "constant": true,
-            "id": 1772,
+            "id": 1908,
             "name": "symbol",
             "nodeType": "VariableDeclaration",
-            "scope": 1776,
+            "scope": 1912,
             "src": "196:37:4",
             "stateVariable": true,
             "storageLocation": "default",
@@ -543,7 +543,7 @@
               "typeString": "string"
             },
             "typeName": {
-              "id": 1770,
+              "id": 1906,
               "name": "string",
               "nodeType": "ElementaryTypeName",
               "src": "196:6:4",
@@ -555,7 +555,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "535454",
-              "id": 1771,
+              "id": 1907,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -574,10 +574,10 @@
           },
           {
             "constant": true,
-            "id": 1775,
+            "id": 1911,
             "name": "decimals",
             "nodeType": "VariableDeclaration",
-            "scope": 1776,
+            "scope": 1912,
             "src": "239:35:4",
             "stateVariable": true,
             "storageLocation": "default",
@@ -586,7 +586,7 @@
               "typeString": "uint8"
             },
             "typeName": {
-              "id": 1773,
+              "id": 1909,
               "name": "uint8",
               "nodeType": "ElementaryTypeName",
               "src": "239:5:4",
@@ -598,7 +598,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "3138",
-              "id": 1774,
+              "id": 1910,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -616,7 +616,7 @@
             "visibility": "public"
           }
         ],
-        "scope": 1777,
+        "scope": 1913,
         "src": "93:184:4"
       }
     ],
@@ -626,14 +626,14 @@
     "absolutePath": "/home/local/REGION/mi.sokoluk/code/blockchainapp/contracts/SitisTradeToken.sol",
     "exportedSymbols": {
       "SitisTradeToken": [
-        1776
+        1912
       ]
     },
-    "id": 1777,
+    "id": 1913,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 1763,
+        "id": 1899,
         "literals": [
           "solidity",
           "^",
@@ -646,10 +646,10 @@
       {
         "absolutePath": "zeppelin-solidity/contracts/token/ERC20/MintableToken.sol",
         "file": "zeppelin-solidity/contracts/token/ERC20/MintableToken.sol",
-        "id": 1764,
+        "id": 1900,
         "nodeType": "ImportDirective",
-        "scope": 1777,
-        "sourceUnit": 2505,
+        "scope": 1913,
+        "sourceUnit": 2641,
         "src": "25:67:4",
         "symbolAliases": [],
         "unitAlias": ""
@@ -660,51 +660,51 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 1765,
+              "id": 1901,
               "name": "MintableToken",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 2504,
+              "referencedDeclaration": 2640,
               "src": "121:13:4",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_MintableToken_$2504",
+                "typeIdentifier": "t_contract$_MintableToken_$2640",
                 "typeString": "contract MintableToken"
               }
             },
-            "id": 1766,
+            "id": 1902,
             "nodeType": "InheritanceSpecifier",
             "src": "121:13:4"
           }
         ],
         "contractDependencies": [
-          2227,
-          2323,
-          2366,
-          2398,
-          2504,
-          2751
+          2363,
+          2459,
+          2502,
+          2534,
+          2640,
+          2887
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 1776,
+        "id": 1912,
         "linearizedBaseContracts": [
-          1776,
-          2504,
-          2227,
-          2751,
-          2323,
-          2366,
-          2398
+          1912,
+          2640,
+          2363,
+          2887,
+          2459,
+          2502,
+          2534
         ],
         "name": "SitisTradeToken",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": true,
-            "id": 1769,
+            "id": 1905,
             "name": "name",
             "nodeType": "VariableDeclaration",
-            "scope": 1776,
+            "scope": 1912,
             "src": "141:49:4",
             "stateVariable": true,
             "storageLocation": "default",
@@ -713,7 +713,7 @@
               "typeString": "string"
             },
             "typeName": {
-              "id": 1767,
+              "id": 1903,
               "name": "string",
               "nodeType": "ElementaryTypeName",
               "src": "141:6:4",
@@ -725,7 +725,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "536974697320547261646520546f6b656e",
-              "id": 1768,
+              "id": 1904,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -744,10 +744,10 @@
           },
           {
             "constant": true,
-            "id": 1772,
+            "id": 1908,
             "name": "symbol",
             "nodeType": "VariableDeclaration",
-            "scope": 1776,
+            "scope": 1912,
             "src": "196:37:4",
             "stateVariable": true,
             "storageLocation": "default",
@@ -756,7 +756,7 @@
               "typeString": "string"
             },
             "typeName": {
-              "id": 1770,
+              "id": 1906,
               "name": "string",
               "nodeType": "ElementaryTypeName",
               "src": "196:6:4",
@@ -768,7 +768,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "535454",
-              "id": 1771,
+              "id": 1907,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -787,10 +787,10 @@
           },
           {
             "constant": true,
-            "id": 1775,
+            "id": 1911,
             "name": "decimals",
             "nodeType": "VariableDeclaration",
-            "scope": 1776,
+            "scope": 1912,
             "src": "239:35:4",
             "stateVariable": true,
             "storageLocation": "default",
@@ -799,7 +799,7 @@
               "typeString": "uint8"
             },
             "typeName": {
-              "id": 1773,
+              "id": 1909,
               "name": "uint8",
               "nodeType": "ElementaryTypeName",
               "src": "239:5:4",
@@ -811,7 +811,7 @@
             "value": {
               "argumentTypes": null,
               "hexValue": "3138",
-              "id": 1774,
+              "id": 1910,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -829,7 +829,7 @@
             "visibility": "public"
           }
         ],
-        "scope": 1777,
+        "scope": 1913,
         "src": "93:184:4"
       }
     ],
@@ -841,5 +841,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.1",
-  "updatedAt": "2018-08-21T06:58:50.875Z"
+  "updatedAt": "2018-08-23T12:27:41.431Z"
 }

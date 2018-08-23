@@ -4,17 +4,20 @@ var SitisArbitration = artifacts.require('./SitisArbitration.sol')
 var SitisPlaceMarket = artifacts.require('./SitisPlaceMarket.sol')
 
 module.exports = function (deployer, network, accounts) {
+  // deployer.deploy(SitisPlaceMarket, '');
+  // deployer.deploy(SitisArbitration, accounts[0] ,[accounts[0], accounts[1], accounts[2]]);
+
   deployer.deploy(
     SitisPlaceMarket,
     '',
   ).then(function (instancePlaceMarket) {
-    console.log('PlaceMarket address: ', SitisPlaceMarket.address)
-    deployer.deploy(
+    console.log('PlaceMarket address: ', instancePlaceMarket.address)
+    return deployer.deploy(
       SitisArbitration,
-      SitisPlaceMarket.address,
+      instancePlaceMarket.address,
       [accounts[0], accounts[1], accounts[2]]
-    ).then(function (res) {
-      instancePlaceMarket.changeArbiter(SitisArbitration.address).then(async function () {
+    ).then(async function (res) {
+      instancePlaceMarket.changeArbiter(res.address).then(async function () {
         console.log('arbiter walet in PlaceMarket after deploy: ', await instancePlaceMarket.arbiterWallet())
       })
     })

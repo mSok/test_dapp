@@ -133,14 +133,14 @@
     "absolutePath": "/home/local/REGION/mi.sokoluk/code/blockchainapp/contracts/SitisTradeTokenCrowdsale.sol",
     "exportedSymbols": {
       "SitisTradeTokenCrowdsale": [
-        1798
+        1934
       ]
     },
-    "id": 1799,
+    "id": 1935,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 1778,
+        "id": 1914,
         "literals": [
           "solidity",
           "^",
@@ -153,10 +153,10 @@
       {
         "absolutePath": "/home/local/REGION/mi.sokoluk/code/blockchainapp/contracts/SitisTradeToken.sol",
         "file": "./SitisTradeToken.sol",
-        "id": 1779,
+        "id": 1915,
         "nodeType": "ImportDirective",
-        "scope": 1799,
-        "sourceUnit": 1777,
+        "scope": 1935,
+        "sourceUnit": 1913,
         "src": "26:31:5",
         "symbolAliases": [],
         "unitAlias": ""
@@ -164,10 +164,10 @@
       {
         "absolutePath": "zeppelin-solidity/contracts/crowdsale/emission/MintedCrowdsale.sol",
         "file": "zeppelin-solidity/contracts/crowdsale/emission/MintedCrowdsale.sol",
-        "id": 1780,
+        "id": 1916,
         "nodeType": "ImportDirective",
-        "scope": 1799,
-        "sourceUnit": 2048,
+        "scope": 1935,
+        "sourceUnit": 2184,
         "src": "58:76:5",
         "symbolAliases": [],
         "unitAlias": ""
@@ -178,46 +178,46 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 1781,
+              "id": 1917,
               "name": "MintedCrowdsale",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 2047,
+              "referencedDeclaration": 2183,
               "src": "174:15:5",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_MintedCrowdsale_$2047",
+                "typeIdentifier": "t_contract$_MintedCrowdsale_$2183",
                 "typeString": "contract MintedCrowdsale"
               }
             },
-            "id": 1782,
+            "id": 1918,
             "nodeType": "InheritanceSpecifier",
             "src": "174:15:5"
           }
         ],
         "contractDependencies": [
-          2022,
-          2047
+          2158,
+          2183
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 1798,
+        "id": 1934,
         "linearizedBaseContracts": [
-          1798,
-          2047,
-          2022
+          1934,
+          2183,
+          2158
         ],
         "name": "SitisTradeTokenCrowdsale",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 1796,
+              "id": 1932,
               "nodeType": "Block",
               "src": "376:12:5",
               "statements": []
             },
             "documentation": null,
-            "id": 1797,
+            "id": 1933,
             "implemented": true,
             "isConstructor": true,
             "isDeclaredConst": false,
@@ -226,11 +226,11 @@
                 "arguments": [
                   {
                     "argumentTypes": null,
-                    "id": 1791,
+                    "id": 1927,
                     "name": "_rate",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 1784,
+                    "referencedDeclaration": 1920,
                     "src": "337:5:5",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
@@ -239,11 +239,11 @@
                   },
                   {
                     "argumentTypes": null,
-                    "id": 1792,
+                    "id": 1928,
                     "name": "_wallet",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 1786,
+                    "referencedDeclaration": 1922,
                     "src": "344:7:5",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -252,29 +252,29 @@
                   },
                   {
                     "argumentTypes": null,
-                    "id": 1793,
+                    "id": 1929,
                     "name": "_token",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 1788,
+                    "referencedDeclaration": 1924,
                     "src": "353:6:5",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_MintableToken_$2504",
+                      "typeIdentifier": "t_contract$_MintableToken_$2640",
                       "typeString": "contract MintableToken"
                     }
                   }
                 ],
-                "id": 1794,
+                "id": 1930,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 1790,
+                  "id": 1926,
                   "name": "Crowdsale",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 2022,
+                  "referencedDeclaration": 2158,
                   "src": "327:9:5",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_type$_t_contract$_Crowdsale_$2022_$",
+                    "typeIdentifier": "t_type$_t_contract$_Crowdsale_$2158_$",
                     "typeString": "type(contract Crowdsale)"
                   }
                 },
@@ -285,15 +285,15 @@
             "name": "SitisTradeTokenCrowdsale",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1789,
+              "id": 1925,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1784,
+                  "id": 1920,
                   "name": "_rate",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1797,
+                  "scope": 1933,
                   "src": "248:13:5",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -302,7 +302,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1783,
+                    "id": 1919,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "248:7:5",
@@ -316,10 +316,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 1786,
+                  "id": 1922,
                   "name": "_wallet",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1797,
+                  "scope": 1933,
                   "src": "271:15:5",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -328,7 +328,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1785,
+                    "id": 1921,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "271:7:5",
@@ -342,26 +342,26 @@
                 },
                 {
                   "constant": false,
-                  "id": 1788,
+                  "id": 1924,
                   "name": "_token",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1797,
+                  "scope": 1933,
                   "src": "296:20:5",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_MintableToken_$2504",
+                    "typeIdentifier": "t_contract$_MintableToken_$2640",
                     "typeString": "contract MintableToken"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 1787,
+                    "id": 1923,
                     "name": "MintableToken",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 2504,
+                    "referencedDeclaration": 2640,
                     "src": "296:13:5",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_MintableToken_$2504",
+                      "typeIdentifier": "t_contract$_MintableToken_$2640",
                       "typeString": "contract MintableToken"
                     }
                   },
@@ -373,19 +373,19 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 1795,
+              "id": 1931,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "376:0:5"
             },
-            "scope": 1798,
+            "scope": 1934,
             "src": "196:192:5",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 1799,
+        "scope": 1935,
         "src": "137:258:5"
       }
     ],
@@ -395,14 +395,14 @@
     "absolutePath": "/home/local/REGION/mi.sokoluk/code/blockchainapp/contracts/SitisTradeTokenCrowdsale.sol",
     "exportedSymbols": {
       "SitisTradeTokenCrowdsale": [
-        1798
+        1934
       ]
     },
-    "id": 1799,
+    "id": 1935,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 1778,
+        "id": 1914,
         "literals": [
           "solidity",
           "^",
@@ -415,10 +415,10 @@
       {
         "absolutePath": "/home/local/REGION/mi.sokoluk/code/blockchainapp/contracts/SitisTradeToken.sol",
         "file": "./SitisTradeToken.sol",
-        "id": 1779,
+        "id": 1915,
         "nodeType": "ImportDirective",
-        "scope": 1799,
-        "sourceUnit": 1777,
+        "scope": 1935,
+        "sourceUnit": 1913,
         "src": "26:31:5",
         "symbolAliases": [],
         "unitAlias": ""
@@ -426,10 +426,10 @@
       {
         "absolutePath": "zeppelin-solidity/contracts/crowdsale/emission/MintedCrowdsale.sol",
         "file": "zeppelin-solidity/contracts/crowdsale/emission/MintedCrowdsale.sol",
-        "id": 1780,
+        "id": 1916,
         "nodeType": "ImportDirective",
-        "scope": 1799,
-        "sourceUnit": 2048,
+        "scope": 1935,
+        "sourceUnit": 2184,
         "src": "58:76:5",
         "symbolAliases": [],
         "unitAlias": ""
@@ -440,46 +440,46 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 1781,
+              "id": 1917,
               "name": "MintedCrowdsale",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 2047,
+              "referencedDeclaration": 2183,
               "src": "174:15:5",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_MintedCrowdsale_$2047",
+                "typeIdentifier": "t_contract$_MintedCrowdsale_$2183",
                 "typeString": "contract MintedCrowdsale"
               }
             },
-            "id": 1782,
+            "id": 1918,
             "nodeType": "InheritanceSpecifier",
             "src": "174:15:5"
           }
         ],
         "contractDependencies": [
-          2022,
-          2047
+          2158,
+          2183
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 1798,
+        "id": 1934,
         "linearizedBaseContracts": [
-          1798,
-          2047,
-          2022
+          1934,
+          2183,
+          2158
         ],
         "name": "SitisTradeTokenCrowdsale",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 1796,
+              "id": 1932,
               "nodeType": "Block",
               "src": "376:12:5",
               "statements": []
             },
             "documentation": null,
-            "id": 1797,
+            "id": 1933,
             "implemented": true,
             "isConstructor": true,
             "isDeclaredConst": false,
@@ -488,11 +488,11 @@
                 "arguments": [
                   {
                     "argumentTypes": null,
-                    "id": 1791,
+                    "id": 1927,
                     "name": "_rate",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 1784,
+                    "referencedDeclaration": 1920,
                     "src": "337:5:5",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
@@ -501,11 +501,11 @@
                   },
                   {
                     "argumentTypes": null,
-                    "id": 1792,
+                    "id": 1928,
                     "name": "_wallet",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 1786,
+                    "referencedDeclaration": 1922,
                     "src": "344:7:5",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -514,29 +514,29 @@
                   },
                   {
                     "argumentTypes": null,
-                    "id": 1793,
+                    "id": 1929,
                     "name": "_token",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 1788,
+                    "referencedDeclaration": 1924,
                     "src": "353:6:5",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_MintableToken_$2504",
+                      "typeIdentifier": "t_contract$_MintableToken_$2640",
                       "typeString": "contract MintableToken"
                     }
                   }
                 ],
-                "id": 1794,
+                "id": 1930,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 1790,
+                  "id": 1926,
                   "name": "Crowdsale",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 2022,
+                  "referencedDeclaration": 2158,
                   "src": "327:9:5",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_type$_t_contract$_Crowdsale_$2022_$",
+                    "typeIdentifier": "t_type$_t_contract$_Crowdsale_$2158_$",
                     "typeString": "type(contract Crowdsale)"
                   }
                 },
@@ -547,15 +547,15 @@
             "name": "SitisTradeTokenCrowdsale",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 1789,
+              "id": 1925,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 1784,
+                  "id": 1920,
                   "name": "_rate",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1797,
+                  "scope": 1933,
                   "src": "248:13:5",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -564,7 +564,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 1783,
+                    "id": 1919,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "248:7:5",
@@ -578,10 +578,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 1786,
+                  "id": 1922,
                   "name": "_wallet",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1797,
+                  "scope": 1933,
                   "src": "271:15:5",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -590,7 +590,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 1785,
+                    "id": 1921,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "271:7:5",
@@ -604,26 +604,26 @@
                 },
                 {
                   "constant": false,
-                  "id": 1788,
+                  "id": 1924,
                   "name": "_token",
                   "nodeType": "VariableDeclaration",
-                  "scope": 1797,
+                  "scope": 1933,
                   "src": "296:20:5",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_MintableToken_$2504",
+                    "typeIdentifier": "t_contract$_MintableToken_$2640",
                     "typeString": "contract MintableToken"
                   },
                   "typeName": {
                     "contractScope": null,
-                    "id": 1787,
+                    "id": 1923,
                     "name": "MintableToken",
                     "nodeType": "UserDefinedTypeName",
-                    "referencedDeclaration": 2504,
+                    "referencedDeclaration": 2640,
                     "src": "296:13:5",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_MintableToken_$2504",
+                      "typeIdentifier": "t_contract$_MintableToken_$2640",
                       "typeString": "contract MintableToken"
                     }
                   },
@@ -635,19 +635,19 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 1795,
+              "id": 1931,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "376:0:5"
             },
-            "scope": 1798,
+            "scope": 1934,
             "src": "196:192:5",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 1799,
+        "scope": 1935,
         "src": "137:258:5"
       }
     ],
@@ -659,5 +659,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.1",
-  "updatedAt": "2018-08-21T06:58:50.877Z"
+  "updatedAt": "2018-08-23T12:27:41.431Z"
 }

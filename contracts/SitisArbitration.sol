@@ -19,7 +19,7 @@ contract SitisArbitration {
     address public sitisServicePlacemarkert;
     // список арбитров
     // address[] public arbiterList;
-    mapping(address => bool) arbiterList;
+    mapping(address => bool) public arbiterList;
     uint16 public arbiterListCount;
 
     constructor (address _market, address[] _arbiterList) public {

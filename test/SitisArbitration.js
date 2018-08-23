@@ -86,4 +86,23 @@ contract('SitisArbitration', function (accounts) {
       expect(res[8].toNumber()).to.be.equal(0)
     })
   })
+
+  it('Проверяем добавление удаление арбитрев', async function () {
+    let _start_cnt = await this.arbitration.arbiterListCount()
+    console.log('start arbiter count:', _start_cnt.toNumber())
+    let _after_cnt = 0
+    await this.arbitration.addArbiter(accounts[4])
+    _after_cnt = await this.arbitration.arbiterListCount()
+    let _added_walet = await this.arbitration.arbiterList.call(accounts[4])
+    _added_walet.should.be.equal(true)
+    _after_cnt.should.be.bignumber.equal(_start_cnt.toNumber()+1)
+
+    await this.arbitration.delArbiter(accounts[4])
+    _after_cnt = await this.arbitration.arbiterListCount()
+    _after_cnt.should.be.bignumber.equal(_start_cnt.toNumber())
+    _added_walet = await this.arbitration.arbiterList.call(accounts[4])
+    _added_walet.should.be.equal(false)
+
+
+  })
 })
