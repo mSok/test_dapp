@@ -1,16 +1,6 @@
 // Контракт для услуг на площадки SitisPlaceMarket
 pragma solidity ^0.4.17;
 
-contract SitisArbitration {
-    function createArbitration (
-        address _buyerId,
-        address _serviceOwner,
-        uint256 _purchasedId,
-        uint16 _limit_percent,
-        uint16 _limit_days
-    )
-        public returns (uint256 arbiterId);
-}
 
 contract SitisPlaceMarket {
     // создтель контракта
@@ -192,11 +182,14 @@ contract SitisPlaceMarket {
         returns (bool result) {
         purchasedService storage pc = purchases[_purchaseId];
         Service storage c = services[pc.serviceId];
-        require(c.id != 0);
+        require(c.id != 0, "Service not found!");
         // отменить может только покупатель или продавец или контракт арбитраж
-        require(msg.sender == pc.buyer || msg.sender == c.serviceOwner || msg.sender == arbiterWallet);
+        require(
+            msg.sender == pc.buyer || msg.sender == c.serviceOwner || msg.sender == arbiterWallet,
+            "Invalid msg.sender, only buyer, owner or arbiter"
+        );
         // сделка не закрыта
-        require(pc.closed == false);
+        require(pc.closed == false, "Service is closed");
 
         uint256 amount = pc.cnt * c.amount;
         if (msg.sender == pc.buyer) {
@@ -273,4 +266,16 @@ contract SitisPlaceMarket {
         if (msg.sender != owner) revert("Only owner");
         owner = newOwner;
     }
+}
+
+
+contract SitisArbitration {
+    function createArbitration (
+        address _buyerId,
+        address _serviceOwner,
+        uint256 _purchasedId,
+        uint16 _limit_percent,
+        uint16 _limit_days
+    )
+        public returns (uint256 arbiterId);
 }

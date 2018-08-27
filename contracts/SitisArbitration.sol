@@ -2,13 +2,6 @@
 pragma solidity ^0.4.17;
 
 
-// abstract methods
-contract SitisPlaceMarketInt {
-    function closePurchase (uint256 _purchaseId) public returns (bool result);
-    function cancelService (uint256 _purchaseId) public returns (bool result);
-}
-
-
 contract SitisArbitration {
 
     // solidity сходит с ума, при переходе от положительного к отрицательному.
@@ -198,4 +191,10 @@ contract SitisArbitration {
         if (msg.sender != owner) revert("Only owner");
         owner = newOwner;
     }
+}
+
+// abstract methods
+contract SitisPlaceMarketInt {
+    function closePurchase (uint256 _purchaseId) public returns (bool result);
+    function cancelService (uint256 _purchaseId) public returns (bool result);
 }
