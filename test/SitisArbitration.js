@@ -88,21 +88,21 @@ contract('SitisArbitration', function (accounts) {
   })
 
   it('Проверяем добавление удаление арбитрев', async function () {
-    let _start_cnt = await this.arbitration.arbiterListCount()
-    console.log('start arbiter count:', _start_cnt.toNumber())
-    let _after_cnt = 0
+    let _startCnt = await this.arbitration.arbiterListCount()
+    let _afterCnt = 0
     await this.arbitration.addArbiter(accounts[4])
-    _after_cnt = await this.arbitration.arbiterListCount()
-    let _added_walet = await this.arbitration.arbiterList.call(accounts[4])
-    _added_walet.should.be.equal(true)
-    _after_cnt.should.be.bignumber.equal(_start_cnt.toNumber()+1)
+    _afterCnt = await this.arbitration.arbiterListCount()
+    let _addedWalet = await this.arbitration.arbiterList.call(accounts[4])
+    _addedWalet.should.be.equal(true)
+    _afterCnt.should.be.bignumber.equal(_startCnt.toNumber() + 1)
+    // повторно добавляем
+    let failRes = await this.arbitration.addArbiter.call(accounts[4])
+    failRes.should.be.equal(false)
 
     await this.arbitration.delArbiter(accounts[4])
-    _after_cnt = await this.arbitration.arbiterListCount()
-    _after_cnt.should.be.bignumber.equal(_start_cnt.toNumber())
-    _added_walet = await this.arbitration.arbiterList.call(accounts[4])
-    _added_walet.should.be.equal(false)
-
-
+    _afterCnt = await this.arbitration.arbiterListCount()
+    _afterCnt.should.be.bignumber.equal(_startCnt.toNumber())
+    _addedWalet = await this.arbitration.arbiterList.call(accounts[4])
+    _addedWalet.should.be.equal(false)
   })
 })

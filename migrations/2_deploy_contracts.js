@@ -4,8 +4,8 @@ var SitisArbitration = artifacts.require('./SitisArbitration.sol')
 var SitisPlaceMarket = artifacts.require('./SitisPlaceMarket.sol')
 
 module.exports = function (deployer, network, accounts) {
-  // deployer.deploy(SitisPlaceMarket, '');
-  // deployer.deploy(SitisArbitration, accounts[0] ,[accounts[0], accounts[1], accounts[2]]);
+  // deployer.deploy(SitisPlaceMarket, '')
+  // deployer.deploy(SitisArbitration, accounts[0], [accounts[0], accounts[1], accounts[2]])
 
   deployer.deploy(
     SitisPlaceMarket,

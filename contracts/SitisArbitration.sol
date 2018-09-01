@@ -38,18 +38,24 @@ contract SitisArbitration {
 
     function addArbiter(
         address _newArbiterWalet
-    ) public onlyOwner {
-        arbiterList[_newArbiterWalet] = true;
-        arbiterListCount += 1;
+    ) public onlyOwner returns (bool) {
+        if (arbiterList[_newArbiterWalet] == false){
+            arbiterList[_newArbiterWalet] = true;
+            arbiterListCount += 1;
+            return true;
+        }
+        return false;
     }
 
     function delArbiter(
         address _arbiterWalet
-    ) public onlyOwner {
+    ) public onlyOwner returns (bool) {
         if (arbiterList[_arbiterWalet] == true){
             arbiterListCount -= 1;
             arbiterList[_arbiterWalet] = false;
+            return true;
         }
+        return false;
     }
 
      // Арбитраж
