@@ -78,7 +78,10 @@ contract SitisArbitration {
     );
     // Арбитраж закрыт
     event closedArbitrationEvent(
-        uint256 id
+        uint256 id,
+        address winner,
+        uint256 purchasedId,
+        string memberType
     );
     event voteArbitrationEvent(
         uint id,
@@ -142,6 +145,7 @@ contract SitisArbitration {
     }
 
     // закрыть арбитраж
+    // плохо что бч метод vote и closeVote в событиях не выдают за кого голос и в чью пользу закрывается
     function closeVote(uint arbitrationId) public
     returns (bool) {
         validCloseArbitration(arbitrationId);
@@ -149,15 +153,26 @@ contract SitisArbitration {
         a.closed = true;
         SitisPlaceMarketInt _placemarketContract = SitisPlaceMarketInt(sitisServicePlacemarkert);
         bool res = false;
-        if (a.voitedCount <= 2000) {
+        address winner;
+        string memory memberType;
+
+        if (voitedResults[arbitrationId] <= 2000) {
             // закрыть покупку, перечислить средства продавцу.
             // function closePurchase (uint256 _purchaseId)
             res = _placemarketContract.closePurchase(a.purchasedId);
+            winner = a.serviceOwner;
+            memberType = 'seller';
         } else {
             // отправляем средства покупателю
             res = _placemarketContract.cancelService(a.purchasedId);
+            winner = a.buyerId;
         }
-        emit closedArbitrationEvent(arbitrationId);
+        emit closedArbitrationEvent(
+            arbitrationId,
+            winner,
+            a.purchasedId,
+            memberType = 'buyer'
+        );
         return res;
     }
 
@@ -196,6 +211,11 @@ contract SitisArbitration {
     function changeOwner(address newOwner) public {
         if (msg.sender != owner) revert("Only owner");
         owner = newOwner;
+    }
+
+    function changePlaceMarket(address newPlaceMarket) public {
+        if (msg.sender != owner) revert("Only owner");
+        sitisServicePlacemarkert = newPlaceMarket;
     }
 }
 
