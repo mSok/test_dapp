@@ -3,3 +3,4 @@ chaindata/*
 npm-debug.log
 db/*
 .vscode/*
+deploy/compile/*
