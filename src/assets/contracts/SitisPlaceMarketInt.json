@@ -44,19 +44,19 @@
   "deployedBytecode": "0x",
   "sourceMap": "",
   "deployedSourceMap": "",
-  "source": "// Контракт для арбитража\npragma solidity ^0.4.17;\n\n\ncontract SitisArbitration {\n\n    // solidity сходит с ума, при переходе от положительного к отрицательному.\n    // Будем считать MID_VOTE - начальным занчением голосования\n    uint16 constant MID_VOTE = 2000;\n    address public owner;\n    // адрес контракта SitisServicePlacemarkert\n    address public sitisServicePlacemarkert;\n    // список арбитров\n    // address[] public arbiterList;\n    mapping(address => bool) public arbiterList;\n    uint16 public arbiterListCount;\n\n    constructor (address _market, address[] _arbiterList) public {\n        owner = msg.sender;\n        sitisServicePlacemarkert = _market;\n        for (uint i = 0; i < _arbiterList.length; i++) {\n            arbiterList[_arbiterList[i]] = true;\n            arbiterListCount += 1;\n        }\n        // arbiterList = _arbiterList;\n    }\n\n    modifier onlyOwner() {\n        require(msg.sender == owner, \"Only owner\");\n        _;\n    }\n    \n    modifier onlyPlaceMarket() {\n        // только площадка может создавать или автор контракта\n        require(msg.sender == sitisServicePlacemarkert || msg.sender == owner, \"Only PlaceMarket\");\n        _;\n    }\n\n    function addArbiter(\n        address _newArbiterWalet\n    ) public onlyOwner returns (bool) {\n        if (arbiterList[_newArbiterWalet] == false){\n            arbiterList[_newArbiterWalet] = true;\n            arbiterListCount += 1;\n            return true;\n        }\n        return false;\n    }\n\n    function delArbiter(\n        address _arbiterWalet\n    ) public onlyOwner returns (bool) {\n        if (arbiterList[_arbiterWalet] == true){\n            arbiterListCount -= 1;\n            arbiterList[_arbiterWalet] = false;\n            return true;\n        }\n        return false;\n    }\n\n     // Арбитраж\n    struct Arbitration {\n        uint256 id;\n        address buyerId;\n        address serviceOwner;\n        uint256 purchasedId;\n        bool closed;\n        uint created;\n        uint16 limit_percent;  // минимальное кол-во голосов для закрытия сделки\n        uint16 limit_days;  // кол-во дней через которое можно однозначно закрыть арбитраж\n        // арбитраж => кто проголосовал\n        mapping(address => bool) voitedArbiter;\n        uint voitedCount;\n    }\n     // Создан спор для арбитража\n    event createdArbitrationEvent(\n        uint256 id\n    );\n    // Арбитраж закрыт\n    event closedArbitrationEvent(\n        uint256 id,\n        address winner,\n        uint256 purchasedId,\n        string memberType\n    );\n    event voteArbitrationEvent(\n        uint id,\n        uint16 voteRes\n    );\n\n    // маппинг арбитражей\n    mapping (uint256 => Arbitration) public arbiterStats;\n    // кол-во арбитражей\n    uint256 public arbiterCount;\n\n    // результаты арбитраж => + toBuyer;  - toServiceOwner\n    mapping(uint => uint16) public voitedResults;\n\n    // создать арбитраж по сделке\n    function createArbitration (\n        address _buyerId,\n        address _serviceOwner,\n        uint256 _purchasedId,\n        uint16 _limit_percent,\n        uint16 _limit_days\n    ) public onlyPlaceMarket\n        returns (uint256 arbiterId) {\n        arbiterCount++;\n        arbiterStats[arbiterCount] = Arbitration({\n            id: arbiterCount,\n            buyerId : _buyerId,\n            serviceOwner: _serviceOwner,\n            purchasedId: _purchasedId,\n            closed: false,\n            created: now,\n            voitedCount: 0,\n            limit_percent: _limit_percent,\n            limit_days: _limit_days\n        });\n        voitedResults[arbiterCount] = MID_VOTE;\n        emit createdArbitrationEvent(arbiterCount);\n        return arbiterCount;\n    }\n\n    function vote(uint arbitrationId, bool result) public\n    returns (uint16) {\n        validArbiter(arbitrationId);\n        Arbitration storage a = arbiterStats[arbitrationId];\n        require (a.created != 0, \"not created arbitration\");\n\n        a.voitedArbiter[msg.sender] = true;\n        a.voitedCount += 1;\n        require (a.closed == false, \"arbitration closed\");\n\n        if (result){\n            voitedResults[arbitrationId] += 1;\n        } else {\n            voitedResults[arbitrationId] -= 1;\n        }\n        emit voteArbitrationEvent(\n            arbitrationId,\n            voitedResults[arbitrationId]\n        );\n        return voitedResults[arbitrationId];\n    }\n\n    // закрыть арбитраж\n    // плохо что бч метод vote и closeVote в событиях не выдают за кого голос и в чью пользу закрывается\n    function closeVote(uint arbitrationId) public\n    returns (bool) {\n        validCloseArbitration(arbitrationId);\n        Arbitration storage a = arbiterStats[arbitrationId];\n        a.closed = true;\n        SitisPlaceMarketInt _placemarketContract = SitisPlaceMarketInt(sitisServicePlacemarkert);\n        bool res = false;\n        address winner;\n        string memory memberType;\n\n        if (voitedResults[arbitrationId] <= 2000) {\n            // закрыть покупку, перечислить средства продавцу.\n            // function closePurchase (uint256 _purchaseId)\n            res = _placemarketContract.closePurchase(a.purchasedId);\n            winner = a.serviceOwner;\n            memberType = 'seller';\n        } else {\n            // отправляем средства покупателю\n            res = _placemarketContract.cancelService(a.purchasedId);\n            winner = a.buyerId;\n        }\n        emit closedArbitrationEvent(\n            arbitrationId,\n            winner,\n            a.purchasedId,\n            memberType = 'buyer'\n        );\n        return res;\n    }\n\n    // вычислить процент целочисленный с точностью\n    function percent(uint numerator, uint denominator, uint precision)\n    public view returns(uint quotient) {\n        // caution, check safe-to-multiply here\n        uint _numerator = numerator * 10 ** (precision+1);\n        // with rounding of last digit\n        uint _quotient = ((_numerator / denominator) + 5) / 10;\n        return ( _quotient);\n    }\n    // проголосовал ли арбитер с адресом addr в арбитраже arbiterId\n    function getVoitedArbiter(uint arbiterId, address addr) public view returns (bool) {\n        return arbiterStats[arbiterId].voitedArbiter[addr];\n    }\n\n    function validArbiter(uint arbiterId) public view returns (bool) {\n        // Проверяем что арбитер есть в списке арбитров\n        require(arbiterList[msg.sender] == true, \"not in arbiter list\");\n        // // Проверяем что арбитер еще не отдал голос\n        Arbitration storage a = arbiterStats[arbiterId];\n        require(a.voitedArbiter[msg.sender] == false, \"already voited\");\n        return true;\n    }\n\n    function validCloseArbitration(uint arbiterId) internal view  {\n        require(arbiterId <= arbiterCount && arbiterId > 0, \"not valid Id\");\n        Arbitration storage a = arbiterStats[arbiterId];\n        uint percenVoited = percent(a.voitedCount, arbiterListCount, 3);\n        uint diff = (now - a.created) / 60 / 60 / 24;  // days\n        uint _limit_percent = a.limit_percent * 10;\n        require(percenVoited >= _limit_percent && diff <= a.limit_days, \"not enough voited\");\n    }\n\n    function changeOwner(address newOwner) public {\n        if (msg.sender != owner) revert(\"Only owner\");\n        owner = newOwner;\n    }\n}\n\n// abstract methods\ncontract SitisPlaceMarketInt {\n    function closePurchase (uint256 _purchaseId) public returns (bool result);\n    function cancelService (uint256 _purchaseId) public returns (bool result);\n}",
+  "source": "// Контракт для арбитража\npragma solidity ^0.4.17;\n\n\ncontract SitisArbitration {\n\n    // solidity сходит с ума, при переходе от положительного к отрицательному.\n    // Будем считать MID_VOTE - начальным занчением голосования\n    uint16 constant MID_VOTE = 2000;\n    address public owner;\n    // адрес контракта SitisServicePlacemarkert\n    address public sitisServicePlacemarkert;\n    // список арбитров\n    // address[] public arbiterList;\n    mapping(address => bool) public arbiterList;\n    uint16 public arbiterListCount;\n\n    constructor (address _market, address[] _arbiterList) public {\n        owner = msg.sender;\n        sitisServicePlacemarkert = _market;\n        for (uint i = 0; i < _arbiterList.length; i++) {\n            arbiterList[_arbiterList[i]] = true;\n            arbiterListCount += 1;\n        }\n        // arbiterList = _arbiterList;\n    }\n\n    modifier onlyOwner() {\n        require(msg.sender == owner, \"Only owner\");\n        _;\n    }\n    \n    modifier onlyPlaceMarket() {\n        // только площадка может создавать или автор контракта\n        require(msg.sender == sitisServicePlacemarkert || msg.sender == owner, \"Only PlaceMarket\");\n        _;\n    }\n\n    function addArbiter(\n        address _newArbiterWalet\n    ) public onlyOwner returns (bool) {\n        if (arbiterList[_newArbiterWalet] == false){\n            arbiterList[_newArbiterWalet] = true;\n            arbiterListCount += 1;\n            return true;\n        }\n        return false;\n    }\n\n    function delArbiter(\n        address _arbiterWalet\n    ) public onlyOwner returns (bool) {\n        if (arbiterList[_arbiterWalet] == true){\n            arbiterListCount -= 1;\n            arbiterList[_arbiterWalet] = false;\n            return true;\n        }\n        return false;\n    }\n\n     // Арбитраж\n    struct Arbitration {\n        uint256 id;\n        address buyerId;\n        address serviceOwner;\n        uint256 purchasedId;\n        bool closed;\n        uint created;\n        uint16 limit_percent;  // минимальное кол-во голосов для закрытия сделки\n        uint16 limit_days;  // кол-во дней через которое можно однозначно закрыть арбитраж\n        // арбитраж => кто проголосовал\n        mapping(address => bool) voitedArbiter;\n        uint voitedCount;\n    }\n     // Создан спор для арбитража\n    event createdArbitrationEvent(\n        uint256 id\n    );\n    // Арбитраж закрыт\n    event closedArbitrationEvent(\n        uint256 id,\n        address winner,\n        uint256 purchasedId,\n        string memberType\n    );\n    event voteArbitrationEvent(\n        uint id,\n        uint16 voteRes\n    );\n\n    // маппинг арбитражей\n    mapping (uint256 => Arbitration) public arbiterStats;\n    // кол-во арбитражей\n    uint256 public arbiterCount;\n\n    // результаты арбитраж => + toBuyer;  - toServiceOwner\n    mapping(uint => uint16) public voitedResults;\n\n    // создать арбитраж по сделке\n    function createArbitration (\n        address _buyerId,\n        address _serviceOwner,\n        uint256 _purchasedId,\n        uint16 _limit_percent,\n        uint16 _limit_days\n    ) public onlyPlaceMarket\n        returns (uint256 arbiterId) {\n        arbiterCount++;\n        arbiterStats[arbiterCount] = Arbitration({\n            id: arbiterCount,\n            buyerId : _buyerId,\n            serviceOwner: _serviceOwner,\n            purchasedId: _purchasedId,\n            closed: false,\n            created: now,\n            voitedCount: 0,\n            limit_percent: _limit_percent,\n            limit_days: _limit_days\n        });\n        voitedResults[arbiterCount] = MID_VOTE;\n        emit createdArbitrationEvent(arbiterCount);\n        return arbiterCount;\n    }\n\n    function vote(uint arbitrationId, bool result) public\n    returns (uint16) {\n        validArbiter(arbitrationId);\n        Arbitration storage a = arbiterStats[arbitrationId];\n        require (a.created != 0, \"not created arbitration\");\n\n        a.voitedArbiter[msg.sender] = true;\n        a.voitedCount += 1;\n        require (a.closed == false, \"arbitration closed\");\n\n        if (result){\n            voitedResults[arbitrationId] += 1;\n        } else {\n            voitedResults[arbitrationId] -= 1;\n        }\n        emit voteArbitrationEvent(\n            arbitrationId,\n            voitedResults[arbitrationId]\n        );\n        return voitedResults[arbitrationId];\n    }\n\n    // закрыть арбитраж\n    // плохо что бч метод vote и closeVote в событиях не выдают за кого голос и в чью пользу закрывается\n    function closeVote(uint arbitrationId) public\n    returns (bool) {\n        validCloseArbitration(arbitrationId);\n        Arbitration storage a = arbiterStats[arbitrationId];\n        a.closed = true;\n        SitisPlaceMarketInt _placemarketContract = SitisPlaceMarketInt(sitisServicePlacemarkert);\n        bool res = false;\n        address winner;\n        string memory memberType;\n\n        if (voitedResults[arbitrationId] <= 2000) {\n            // закрыть покупку, перечислить средства продавцу.\n            // function closePurchase (uint256 _purchaseId)\n            res = _placemarketContract.closePurchase(a.purchasedId);\n            winner = a.serviceOwner;\n            memberType = 'seller';\n        } else {\n            // отправляем средства покупателю\n            res = _placemarketContract.cancelService(a.purchasedId);\n            winner = a.buyerId;\n        }\n        emit closedArbitrationEvent(\n            arbitrationId,\n            winner,\n            a.purchasedId,\n            memberType = 'buyer'\n        );\n        return res;\n    }\n\n    // вычислить процент целочисленный с точностью\n    function percent(uint numerator, uint denominator, uint precision)\n    public view returns(uint quotient) {\n        // caution, check safe-to-multiply here\n        uint _numerator = numerator * 10 ** (precision+1);\n        // with rounding of last digit\n        uint _quotient = ((_numerator / denominator) + 5) / 10;\n        return ( _quotient);\n    }\n    // проголосовал ли арбитер с адресом addr в арбитраже arbiterId\n    function getVoitedArbiter(uint arbiterId, address addr) public view returns (bool) {\n        return arbiterStats[arbiterId].voitedArbiter[addr];\n    }\n\n    function validArbiter(uint arbiterId) public view returns (bool) {\n        // Проверяем что арбитер есть в списке арбитров\n        require(arbiterList[msg.sender] == true, \"not in arbiter list\");\n        // // Проверяем что арбитер еще не отдал голос\n        Arbitration storage a = arbiterStats[arbiterId];\n        require(a.voitedArbiter[msg.sender] == false, \"already voited\");\n        return true;\n    }\n\n    function validCloseArbitration(uint arbiterId) internal view  {\n        require(arbiterId <= arbiterCount && arbiterId > 0, \"not valid Id\");\n        Arbitration storage a = arbiterStats[arbiterId];\n        uint percenVoited = percent(a.voitedCount, arbiterListCount, 3);\n        uint diff = (now - a.created) / 60 / 60 / 24;  // days\n        uint _limit_percent = a.limit_percent * 10;\n        require(percenVoited >= _limit_percent && diff <= a.limit_days, \"not enough voited\");\n    }\n\n    function changeOwner(address newOwner) public {\n        if (msg.sender != owner) revert(\"Only owner\");\n        owner = newOwner;\n    }\n\n    function changePlaceMarket(address newPlaceMarket) public {\n        if (msg.sender != owner) revert(\"Only owner\");\n        sitisServicePlacemarkert = newPlaceMarket;\n    }\n}\n\n// abstract methods\ncontract SitisPlaceMarketInt {\n    function closePurchase (uint256 _purchaseId) public returns (bool result);\n    function cancelService (uint256 _purchaseId) public returns (bool result);\n}",
   "sourcePath": "/home/sok/code/test_dapp/contracts/SitisArbitration.sol",
   "ast": {
     "absolutePath": "/home/sok/code/test_dapp/contracts/SitisArbitration.sol",
     "exportedSymbols": {
       "SitisArbitration": [
-        595
+        614
       ],
       "SitisPlaceMarketInt": [
-        610
+        629
       ]
     },
-    "id": 611,
+    "id": 630,
     "nodeType": "SourceUnit",
     "nodes": [
       {
@@ -76,9 +76,9 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 595,
+        "id": 614,
         "linearizedBaseContracts": [
-          595
+          614
         ],
         "name": "SitisArbitration",
         "nodeType": "ContractDefinition",
@@ -88,7 +88,7 @@
             "id": 4,
             "name": "MID_VOTE",
             "nodeType": "VariableDeclaration",
-            "scope": 595,
+            "scope": 614,
             "src": "342:31:0",
             "stateVariable": true,
             "storageLocation": "default",
@@ -131,7 +131,7 @@
             "id": 6,
             "name": "owner",
             "nodeType": "VariableDeclaration",
-            "scope": 595,
+            "scope": 614,
             "src": "379:20:0",
             "stateVariable": true,
             "storageLocation": "default",
@@ -157,7 +157,7 @@
             "id": 8,
             "name": "sitisServicePlacemarkert",
             "nodeType": "VariableDeclaration",
-            "scope": 595,
+            "scope": 614,
             "src": "467:39:0",
             "stateVariable": true,
             "storageLocation": "default",
@@ -183,7 +183,7 @@
             "id": 12,
             "name": "arbiterList",
             "nodeType": "VariableDeclaration",
-            "scope": 595,
+            "scope": 614,
             "src": "586:43:0",
             "stateVariable": true,
             "storageLocation": "default",
@@ -228,7 +228,7 @@
             "id": 14,
             "name": "arbiterListCount",
             "nodeType": "VariableDeclaration",
-            "scope": 595,
+            "scope": 614,
             "src": "635:30:0",
             "stateVariable": true,
             "storageLocation": "default",
@@ -286,7 +286,7 @@
                         "name": "msg",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 625,
+                        "referencedDeclaration": 644,
                         "src": "751:3:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_magic_message",
@@ -766,7 +766,7 @@
               "parameters": [],
               "src": "733:0:0"
             },
-            "scope": 595,
+            "scope": 614,
             "src": "672:330:0",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -801,7 +801,7 @@
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 625,
+                            "referencedDeclaration": 644,
                             "src": "1047:3:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
@@ -877,10 +877,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        628,
-                        629
+                        647,
+                        648
                       ],
-                      "referencedDeclaration": 629,
+                      "referencedDeclaration": 648,
                       "src": "1039:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -965,7 +965,7 @@
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 625,
+                              "referencedDeclaration": 644,
                               "src": "1262:3:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
@@ -1028,7 +1028,7 @@
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 625,
+                              "referencedDeclaration": 644,
                               "src": "1304:3:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
@@ -1110,10 +1110,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        628,
-                        629
+                        647,
+                        648
                       ],
-                      "referencedDeclaration": 629,
+                      "referencedDeclaration": 648,
                       "src": "1254:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -1528,7 +1528,7 @@
               ],
               "src": "1453:6:0"
             },
-            "scope": 595,
+            "scope": 614,
             "src": "1368:294:0",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -1904,7 +1904,7 @@
               ],
               "src": "1750:6:0"
             },
-            "scope": 595,
+            "scope": 614,
             "src": "1668:285:0",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -2196,7 +2196,7 @@
             ],
             "name": "Arbitration",
             "nodeType": "StructDefinition",
-            "scope": 595,
+            "scope": 614,
             "src": "1984:573:0",
             "visibility": "public"
           },
@@ -2439,7 +2439,7 @@
             "id": 195,
             "name": "arbiterStats",
             "nodeType": "VariableDeclaration",
-            "scope": 595,
+            "scope": 614,
             "src": "2979:52:0",
             "stateVariable": true,
             "storageLocation": "default",
@@ -2486,7 +2486,7 @@
             "id": 197,
             "name": "arbiterCount",
             "nodeType": "VariableDeclaration",
-            "scope": 595,
+            "scope": 614,
             "src": "3077:27:0",
             "stateVariable": true,
             "storageLocation": "default",
@@ -2512,7 +2512,7 @@
             "id": 201,
             "name": "voitedResults",
             "nodeType": "VariableDeclaration",
-            "scope": 595,
+            "scope": 614,
             "src": "3188:44:0",
             "stateVariable": true,
             "storageLocation": "default",
@@ -2721,7 +2721,7 @@
                           "name": "now",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 627,
+                          "referencedDeclaration": 646,
                           "src": "3802:3:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
@@ -3167,7 +3167,7 @@
               ],
               "src": "3515:19:0"
             },
-            "scope": 595,
+            "scope": 614,
             "src": "3296:764:0",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -3415,10 +3415,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        628,
-                        629
+                        647,
+                        648
                       ],
-                      "referencedDeclaration": 629,
+                      "referencedDeclaration": 648,
                       "src": "4249:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -3491,7 +3491,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 625,
+                          "referencedDeclaration": 644,
                           "src": "4327:3:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -3724,10 +3724,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        628,
-                        629
+                        647,
+                        648
                       ],
-                      "referencedDeclaration": 629,
+                      "referencedDeclaration": 648,
                       "src": "4383:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -4187,7 +4187,7 @@
               ],
               "src": "4132:8:0"
             },
-            "scope": 595,
+            "scope": 614,
             "src": "4066:675:0",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -4413,7 +4413,7 @@
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_SitisPlaceMarketInt_$610",
+                        "typeIdentifier": "t_contract$_SitisPlaceMarketInt_$629",
                         "typeString": "contract SitisPlaceMarketInt"
                       },
                       "typeName": {
@@ -4421,10 +4421,10 @@
                         "id": 351,
                         "name": "SitisPlaceMarketInt",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 610,
+                        "referencedDeclaration": 629,
                         "src": "5164:19:0",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_SitisPlaceMarketInt_$610",
+                          "typeIdentifier": "t_contract$_SitisPlaceMarketInt_$629",
                           "typeString": "contract SitisPlaceMarketInt"
                         }
                       },
@@ -4461,10 +4461,10 @@
                       "name": "SitisPlaceMarketInt",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 610,
+                      "referencedDeclaration": 629,
                       "src": "5207:19:0",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_contract$_SitisPlaceMarketInt_$610_$",
+                        "typeIdentifier": "t_type$_t_contract$_SitisPlaceMarketInt_$629_$",
                         "typeString": "type(contract SitisPlaceMarketInt)"
                       }
                     },
@@ -4478,7 +4478,7 @@
                     "nodeType": "FunctionCall",
                     "src": "5207:45:0",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_SitisPlaceMarketInt_$610",
+                      "typeIdentifier": "t_contract$_SitisPlaceMarketInt_$629",
                       "typeString": "contract SitisPlaceMarketInt"
                     }
                   },
@@ -4764,7 +4764,7 @@
                                 "referencedDeclaration": 352,
                                 "src": "5805:20:0",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_contract$_SitisPlaceMarketInt_$610",
+                                  "typeIdentifier": "t_contract$_SitisPlaceMarketInt_$629",
                                   "typeString": "contract SitisPlaceMarketInt"
                                 }
                               },
@@ -4775,7 +4775,7 @@
                               "lValueRequested": false,
                               "memberName": "cancelService",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 609,
+                              "referencedDeclaration": 628,
                               "src": "5805:34:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_external_nonpayable$_t_uint256_$returns$_t_bool_$",
@@ -4950,7 +4950,7 @@
                                 "referencedDeclaration": 352,
                                 "src": "5573:20:0",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_contract$_SitisPlaceMarketInt_$610",
+                                  "typeIdentifier": "t_contract$_SitisPlaceMarketInt_$629",
                                   "typeString": "contract SitisPlaceMarketInt"
                                 }
                               },
@@ -4961,7 +4961,7 @@
                               "lValueRequested": false,
                               "memberName": "closePurchase",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 602,
+                              "referencedDeclaration": 621,
                               "src": "5573:34:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_external_nonpayable$_t_uint256_$returns$_t_bool_$",
@@ -5358,7 +5358,7 @@
               ],
               "src": "5015:6:0"
             },
-            "scope": 595,
+            "scope": 614,
             "src": "4957:1121:0",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -5896,7 +5896,7 @@
               ],
               "src": "6264:15:0"
             },
-            "scope": 595,
+            "scope": 614,
             "src": "6174:352:0",
             "stateMutability": "view",
             "superFunction": null,
@@ -6100,7 +6100,7 @@
               ],
               "src": "6714:6:0"
             },
-            "scope": 595,
+            "scope": 614,
             "src": "6638:150:0",
             "stateMutability": "view",
             "superFunction": null,
@@ -6151,7 +6151,7 @@
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 625,
+                              "referencedDeclaration": 644,
                               "src": "6983:3:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
@@ -6243,10 +6243,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        628,
-                        629
+                        647,
+                        648
                       ],
-                      "referencedDeclaration": 629,
+                      "referencedDeclaration": 648,
                       "src": "6963:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -6404,7 +6404,7 @@
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 625,
+                              "referencedDeclaration": 644,
                               "src": "7206:3:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
@@ -6496,10 +6496,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        628,
-                        629
+                        647,
+                        648
                       ],
-                      "referencedDeclaration": 629,
+                      "referencedDeclaration": 648,
                       "src": "7182:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -6625,7 +6625,7 @@
               ],
               "src": "6852:6:0"
             },
-            "scope": 595,
+            "scope": 614,
             "src": "6794:479:0",
             "stateMutability": "view",
             "superFunction": null,
@@ -6789,10 +6789,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        628,
-                        629
+                        647,
+                        648
                       ],
-                      "referencedDeclaration": 629,
+                      "referencedDeclaration": 648,
                       "src": "7351:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -7121,7 +7121,7 @@
                                 "name": "now",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 627,
+                                "referencedDeclaration": 646,
                                 "src": "7571:3:0",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_uint256",
@@ -7525,10 +7525,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        628,
-                        629
+                        647,
+                        648
                       ],
-                      "referencedDeclaration": 629,
+                      "referencedDeclaration": 648,
                       "src": "7673:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -7603,7 +7603,7 @@
               "parameters": [],
               "src": "7341:0:0"
             },
-            "scope": 595,
+            "scope": 614,
             "src": "7279:485:0",
             "stateMutability": "view",
             "superFunction": null,
@@ -7635,7 +7635,7 @@
                         "name": "msg",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 625,
+                        "referencedDeclaration": 644,
                         "src": "7830:3:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_magic_message",
@@ -7715,10 +7715,10 @@
                         "name": "revert",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [
-                          630,
-                          631
+                          649,
+                          650
                         ],
-                        "referencedDeclaration": 631,
+                        "referencedDeclaration": 650,
                         "src": "7851:6:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_revert_pure$_t_string_memory_ptr_$returns$__$",
@@ -7840,15 +7840,252 @@
               "parameters": [],
               "src": "7816:0:0"
             },
-            "scope": 595,
+            "scope": 614,
             "src": "7770:134:0",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 612,
+              "nodeType": "Block",
+              "src": "7968:113:0",
+              "statements": [
+                {
+                  "condition": {
+                    "argumentTypes": null,
+                    "commonType": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    },
+                    "id": 602,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftExpression": {
+                      "argumentTypes": null,
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 599,
+                        "name": "msg",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 644,
+                        "src": "7982:3:0",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_magic_message",
+                          "typeString": "msg"
+                        }
+                      },
+                      "id": 600,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "sender",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": null,
+                      "src": "7982:10:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "nodeType": "BinaryOperation",
+                    "operator": "!=",
+                    "rightExpression": {
+                      "argumentTypes": null,
+                      "id": 601,
+                      "name": "owner",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 6,
+                      "src": "7996:5:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "src": "7982:19:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "falseBody": null,
+                  "id": 607,
+                  "nodeType": "IfStatement",
+                  "src": "7978:45:0",
+                  "trueBody": {
+                    "expression": {
+                      "argumentTypes": null,
+                      "arguments": [
+                        {
+                          "argumentTypes": null,
+                          "hexValue": "4f6e6c79206f776e6572",
+                          "id": 604,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "kind": "string",
+                          "lValueRequested": false,
+                          "nodeType": "Literal",
+                          "src": "8010:12:0",
+                          "subdenomination": null,
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_stringliteral_17d9f114efaa93d67eedad749dd7fd16a6895ff93e28b7a30c667a069f2ed42d",
+                            "typeString": "literal_string \"Only owner\""
+                          },
+                          "value": "Only owner"
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_stringliteral_17d9f114efaa93d67eedad749dd7fd16a6895ff93e28b7a30c667a069f2ed42d",
+                            "typeString": "literal_string \"Only owner\""
+                          }
+                        ],
+                        "id": 603,
+                        "name": "revert",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [
+                          649,
+                          650
+                        ],
+                        "referencedDeclaration": 650,
+                        "src": "8003:6:0",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_function_revert_pure$_t_string_memory_ptr_$returns$__$",
+                          "typeString": "function (string memory) pure"
+                        }
+                      },
+                      "id": 605,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "functionCall",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "8003:20:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_tuple$__$",
+                        "typeString": "tuple()"
+                      }
+                    },
+                    "id": 606,
+                    "nodeType": "ExpressionStatement",
+                    "src": "8003:20:0"
+                  }
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 610,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 608,
+                      "name": "sitisServicePlacemarkert",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 8,
+                      "src": "8033:24:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 609,
+                      "name": "newPlaceMarket",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 596,
+                      "src": "8060:14:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "src": "8033:41:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "id": 611,
+                  "nodeType": "ExpressionStatement",
+                  "src": "8033:41:0"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 613,
+            "implemented": true,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "changePlaceMarket",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 597,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 596,
+                  "name": "newPlaceMarket",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 613,
+                  "src": "7937:22:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 595,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "7937:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "7936:24:0"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 598,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "7968:0:0"
+            },
+            "scope": 614,
+            "src": "7910:171:0",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 611,
-        "src": "73:7833:0"
+        "scope": 630,
+        "src": "73:8010:0"
       },
       {
         "baseContracts": [],
@@ -7856,9 +8093,9 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 610,
+        "id": 629,
         "linearizedBaseContracts": [
-          610
+          629
         ],
         "name": "SitisPlaceMarketInt",
         "nodeType": "ContractDefinition",
@@ -7866,7 +8103,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 602,
+            "id": 621,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -7874,16 +8111,16 @@
             "name": "closePurchase",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 598,
+              "id": 617,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 597,
+                  "id": 616,
                   "name": "_purchaseId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 602,
-                  "src": "7987:19:0",
+                  "scope": 621,
+                  "src": "8164:19:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -7891,10 +8128,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 596,
+                    "id": 615,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "7987:7:0",
+                    "src": "8164:7:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -7904,20 +8141,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "7986:21:0"
+              "src": "8163:21:0"
             },
             "payable": false,
             "returnParameters": {
-              "id": 601,
+              "id": 620,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 600,
+                  "id": 619,
                   "name": "result",
                   "nodeType": "VariableDeclaration",
-                  "scope": 602,
-                  "src": "8024:11:0",
+                  "scope": 621,
+                  "src": "8201:11:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -7925,10 +8162,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 599,
+                    "id": 618,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "8024:4:0",
+                    "src": "8201:4:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -7938,10 +8175,10 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "8023:13:0"
+              "src": "8200:13:0"
             },
-            "scope": 610,
-            "src": "7963:74:0",
+            "scope": 629,
+            "src": "8140:74:0",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
@@ -7949,7 +8186,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 609,
+            "id": 628,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -7957,16 +8194,16 @@
             "name": "cancelService",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 605,
+              "id": 624,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 604,
+                  "id": 623,
                   "name": "_purchaseId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 609,
-                  "src": "8066:19:0",
+                  "scope": 628,
+                  "src": "8243:19:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -7974,10 +8211,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 603,
+                    "id": 622,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "8066:7:0",
+                    "src": "8243:7:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -7987,20 +8224,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "8065:21:0"
+              "src": "8242:21:0"
             },
             "payable": false,
             "returnParameters": {
-              "id": 608,
+              "id": 627,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 607,
+                  "id": 626,
                   "name": "result",
                   "nodeType": "VariableDeclaration",
-                  "scope": 609,
-                  "src": "8103:11:0",
+                  "scope": 628,
+                  "src": "8280:11:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -8008,10 +8245,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 606,
+                    "id": 625,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "8103:4:0",
+                    "src": "8280:4:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -8021,32 +8258,32 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "8102:13:0"
+              "src": "8279:13:0"
             },
-            "scope": 610,
-            "src": "8042:74:0",
+            "scope": 629,
+            "src": "8219:74:0",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 611,
-        "src": "7928:190:0"
+        "scope": 630,
+        "src": "8105:190:0"
       }
     ],
-    "src": "46:8072:0"
+    "src": "46:8249:0"
   },
   "legacyAST": {
     "absolutePath": "/home/sok/code/test_dapp/contracts/SitisArbitration.sol",
     "exportedSymbols": {
       "SitisArbitration": [
-        595
+        614
       ],
       "SitisPlaceMarketInt": [
-        610
+        629
       ]
     },
-    "id": 611,
+    "id": 630,
     "nodeType": "SourceUnit",
     "nodes": [
       {
@@ -8066,9 +8303,9 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 595,
+        "id": 614,
         "linearizedBaseContracts": [
-          595
+          614
         ],
         "name": "SitisArbitration",
         "nodeType": "ContractDefinition",
@@ -8078,7 +8315,7 @@
             "id": 4,
             "name": "MID_VOTE",
             "nodeType": "VariableDeclaration",
-            "scope": 595,
+            "scope": 614,
             "src": "342:31:0",
             "stateVariable": true,
             "storageLocation": "default",
@@ -8121,7 +8358,7 @@
             "id": 6,
             "name": "owner",
             "nodeType": "VariableDeclaration",
-            "scope": 595,
+            "scope": 614,
             "src": "379:20:0",
             "stateVariable": true,
             "storageLocation": "default",
@@ -8147,7 +8384,7 @@
             "id": 8,
             "name": "sitisServicePlacemarkert",
             "nodeType": "VariableDeclaration",
-            "scope": 595,
+            "scope": 614,
             "src": "467:39:0",
             "stateVariable": true,
             "storageLocation": "default",
@@ -8173,7 +8410,7 @@
             "id": 12,
             "name": "arbiterList",
             "nodeType": "VariableDeclaration",
-            "scope": 595,
+            "scope": 614,
             "src": "586:43:0",
             "stateVariable": true,
             "storageLocation": "default",
@@ -8218,7 +8455,7 @@
             "id": 14,
             "name": "arbiterListCount",
             "nodeType": "VariableDeclaration",
-            "scope": 595,
+            "scope": 614,
             "src": "635:30:0",
             "stateVariable": true,
             "storageLocation": "default",
@@ -8276,7 +8513,7 @@
                         "name": "msg",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 625,
+                        "referencedDeclaration": 644,
                         "src": "751:3:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_magic_message",
@@ -8756,7 +8993,7 @@
               "parameters": [],
               "src": "733:0:0"
             },
-            "scope": 595,
+            "scope": 614,
             "src": "672:330:0",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -8791,7 +9028,7 @@
                             "name": "msg",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 625,
+                            "referencedDeclaration": 644,
                             "src": "1047:3:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_magic_message",
@@ -8867,10 +9104,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        628,
-                        629
+                        647,
+                        648
                       ],
-                      "referencedDeclaration": 629,
+                      "referencedDeclaration": 648,
                       "src": "1039:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -8955,7 +9192,7 @@
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 625,
+                              "referencedDeclaration": 644,
                               "src": "1262:3:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
@@ -9018,7 +9255,7 @@
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 625,
+                              "referencedDeclaration": 644,
                               "src": "1304:3:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
@@ -9100,10 +9337,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        628,
-                        629
+                        647,
+                        648
                       ],
-                      "referencedDeclaration": 629,
+                      "referencedDeclaration": 648,
                       "src": "1254:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -9518,7 +9755,7 @@
               ],
               "src": "1453:6:0"
             },
-            "scope": 595,
+            "scope": 614,
             "src": "1368:294:0",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -9894,7 +10131,7 @@
               ],
               "src": "1750:6:0"
             },
-            "scope": 595,
+            "scope": 614,
             "src": "1668:285:0",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -10186,7 +10423,7 @@
             ],
             "name": "Arbitration",
             "nodeType": "StructDefinition",
-            "scope": 595,
+            "scope": 614,
             "src": "1984:573:0",
             "visibility": "public"
           },
@@ -10429,7 +10666,7 @@
             "id": 195,
             "name": "arbiterStats",
             "nodeType": "VariableDeclaration",
-            "scope": 595,
+            "scope": 614,
             "src": "2979:52:0",
             "stateVariable": true,
             "storageLocation": "default",
@@ -10476,7 +10713,7 @@
             "id": 197,
             "name": "arbiterCount",
             "nodeType": "VariableDeclaration",
-            "scope": 595,
+            "scope": 614,
             "src": "3077:27:0",
             "stateVariable": true,
             "storageLocation": "default",
@@ -10502,7 +10739,7 @@
             "id": 201,
             "name": "voitedResults",
             "nodeType": "VariableDeclaration",
-            "scope": 595,
+            "scope": 614,
             "src": "3188:44:0",
             "stateVariable": true,
             "storageLocation": "default",
@@ -10711,7 +10948,7 @@
                           "name": "now",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 627,
+                          "referencedDeclaration": 646,
                           "src": "3802:3:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
@@ -11157,7 +11394,7 @@
               ],
               "src": "3515:19:0"
             },
-            "scope": 595,
+            "scope": 614,
             "src": "3296:764:0",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -11405,10 +11642,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        628,
-                        629
+                        647,
+                        648
                       ],
-                      "referencedDeclaration": 629,
+                      "referencedDeclaration": 648,
                       "src": "4249:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -11481,7 +11718,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 625,
+                          "referencedDeclaration": 644,
                           "src": "4327:3:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -11714,10 +11951,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        628,
-                        629
+                        647,
+                        648
                       ],
-                      "referencedDeclaration": 629,
+                      "referencedDeclaration": 648,
                       "src": "4383:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -12177,7 +12414,7 @@
               ],
               "src": "4132:8:0"
             },
-            "scope": 595,
+            "scope": 614,
             "src": "4066:675:0",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -12403,7 +12640,7 @@
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_SitisPlaceMarketInt_$610",
+                        "typeIdentifier": "t_contract$_SitisPlaceMarketInt_$629",
                         "typeString": "contract SitisPlaceMarketInt"
                       },
                       "typeName": {
@@ -12411,10 +12648,10 @@
                         "id": 351,
                         "name": "SitisPlaceMarketInt",
                         "nodeType": "UserDefinedTypeName",
-                        "referencedDeclaration": 610,
+                        "referencedDeclaration": 629,
                         "src": "5164:19:0",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_SitisPlaceMarketInt_$610",
+                          "typeIdentifier": "t_contract$_SitisPlaceMarketInt_$629",
                           "typeString": "contract SitisPlaceMarketInt"
                         }
                       },
@@ -12451,10 +12688,10 @@
                       "name": "SitisPlaceMarketInt",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 610,
+                      "referencedDeclaration": 629,
                       "src": "5207:19:0",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_contract$_SitisPlaceMarketInt_$610_$",
+                        "typeIdentifier": "t_type$_t_contract$_SitisPlaceMarketInt_$629_$",
                         "typeString": "type(contract SitisPlaceMarketInt)"
                       }
                     },
@@ -12468,7 +12705,7 @@
                     "nodeType": "FunctionCall",
                     "src": "5207:45:0",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_SitisPlaceMarketInt_$610",
+                      "typeIdentifier": "t_contract$_SitisPlaceMarketInt_$629",
                       "typeString": "contract SitisPlaceMarketInt"
                     }
                   },
@@ -12754,7 +12991,7 @@
                                 "referencedDeclaration": 352,
                                 "src": "5805:20:0",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_contract$_SitisPlaceMarketInt_$610",
+                                  "typeIdentifier": "t_contract$_SitisPlaceMarketInt_$629",
                                   "typeString": "contract SitisPlaceMarketInt"
                                 }
                               },
@@ -12765,7 +13002,7 @@
                               "lValueRequested": false,
                               "memberName": "cancelService",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 609,
+                              "referencedDeclaration": 628,
                               "src": "5805:34:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_external_nonpayable$_t_uint256_$returns$_t_bool_$",
@@ -12940,7 +13177,7 @@
                                 "referencedDeclaration": 352,
                                 "src": "5573:20:0",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_contract$_SitisPlaceMarketInt_$610",
+                                  "typeIdentifier": "t_contract$_SitisPlaceMarketInt_$629",
                                   "typeString": "contract SitisPlaceMarketInt"
                                 }
                               },
@@ -12951,7 +13188,7 @@
                               "lValueRequested": false,
                               "memberName": "closePurchase",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 602,
+                              "referencedDeclaration": 621,
                               "src": "5573:34:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_function_external_nonpayable$_t_uint256_$returns$_t_bool_$",
@@ -13348,7 +13585,7 @@
               ],
               "src": "5015:6:0"
             },
-            "scope": 595,
+            "scope": 614,
             "src": "4957:1121:0",
             "stateMutability": "nonpayable",
             "superFunction": null,
@@ -13886,7 +14123,7 @@
               ],
               "src": "6264:15:0"
             },
-            "scope": 595,
+            "scope": 614,
             "src": "6174:352:0",
             "stateMutability": "view",
             "superFunction": null,
@@ -14090,7 +14327,7 @@
               ],
               "src": "6714:6:0"
             },
-            "scope": 595,
+            "scope": 614,
             "src": "6638:150:0",
             "stateMutability": "view",
             "superFunction": null,
@@ -14141,7 +14378,7 @@
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 625,
+                              "referencedDeclaration": 644,
                               "src": "6983:3:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
@@ -14233,10 +14470,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        628,
-                        629
+                        647,
+                        648
                       ],
-                      "referencedDeclaration": 629,
+                      "referencedDeclaration": 648,
                       "src": "6963:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -14394,7 +14631,7 @@
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 625,
+                              "referencedDeclaration": 644,
                               "src": "7206:3:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
@@ -14486,10 +14723,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        628,
-                        629
+                        647,
+                        648
                       ],
-                      "referencedDeclaration": 629,
+                      "referencedDeclaration": 648,
                       "src": "7182:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -14615,7 +14852,7 @@
               ],
               "src": "6852:6:0"
             },
-            "scope": 595,
+            "scope": 614,
             "src": "6794:479:0",
             "stateMutability": "view",
             "superFunction": null,
@@ -14779,10 +15016,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        628,
-                        629
+                        647,
+                        648
                       ],
-                      "referencedDeclaration": 629,
+                      "referencedDeclaration": 648,
                       "src": "7351:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -15111,7 +15348,7 @@
                                 "name": "now",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 627,
+                                "referencedDeclaration": 646,
                                 "src": "7571:3:0",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_uint256",
@@ -15515,10 +15752,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        628,
-                        629
+                        647,
+                        648
                       ],
-                      "referencedDeclaration": 629,
+                      "referencedDeclaration": 648,
                       "src": "7673:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -15593,7 +15830,7 @@
               "parameters": [],
               "src": "7341:0:0"
             },
-            "scope": 595,
+            "scope": 614,
             "src": "7279:485:0",
             "stateMutability": "view",
             "superFunction": null,
@@ -15625,7 +15862,7 @@
                         "name": "msg",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 625,
+                        "referencedDeclaration": 644,
                         "src": "7830:3:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_magic_message",
@@ -15705,10 +15942,10 @@
                         "name": "revert",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [
-                          630,
-                          631
+                          649,
+                          650
                         ],
-                        "referencedDeclaration": 631,
+                        "referencedDeclaration": 650,
                         "src": "7851:6:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_revert_pure$_t_string_memory_ptr_$returns$__$",
@@ -15830,15 +16067,252 @@
               "parameters": [],
               "src": "7816:0:0"
             },
-            "scope": 595,
+            "scope": 614,
             "src": "7770:134:0",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 612,
+              "nodeType": "Block",
+              "src": "7968:113:0",
+              "statements": [
+                {
+                  "condition": {
+                    "argumentTypes": null,
+                    "commonType": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    },
+                    "id": 602,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftExpression": {
+                      "argumentTypes": null,
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 599,
+                        "name": "msg",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 644,
+                        "src": "7982:3:0",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_magic_message",
+                          "typeString": "msg"
+                        }
+                      },
+                      "id": 600,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "sender",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": null,
+                      "src": "7982:10:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "nodeType": "BinaryOperation",
+                    "operator": "!=",
+                    "rightExpression": {
+                      "argumentTypes": null,
+                      "id": 601,
+                      "name": "owner",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 6,
+                      "src": "7996:5:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "src": "7982:19:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "falseBody": null,
+                  "id": 607,
+                  "nodeType": "IfStatement",
+                  "src": "7978:45:0",
+                  "trueBody": {
+                    "expression": {
+                      "argumentTypes": null,
+                      "arguments": [
+                        {
+                          "argumentTypes": null,
+                          "hexValue": "4f6e6c79206f776e6572",
+                          "id": 604,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "kind": "string",
+                          "lValueRequested": false,
+                          "nodeType": "Literal",
+                          "src": "8010:12:0",
+                          "subdenomination": null,
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_stringliteral_17d9f114efaa93d67eedad749dd7fd16a6895ff93e28b7a30c667a069f2ed42d",
+                            "typeString": "literal_string \"Only owner\""
+                          },
+                          "value": "Only owner"
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_stringliteral_17d9f114efaa93d67eedad749dd7fd16a6895ff93e28b7a30c667a069f2ed42d",
+                            "typeString": "literal_string \"Only owner\""
+                          }
+                        ],
+                        "id": 603,
+                        "name": "revert",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [
+                          649,
+                          650
+                        ],
+                        "referencedDeclaration": 650,
+                        "src": "8003:6:0",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_function_revert_pure$_t_string_memory_ptr_$returns$__$",
+                          "typeString": "function (string memory) pure"
+                        }
+                      },
+                      "id": 605,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "functionCall",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "8003:20:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_tuple$__$",
+                        "typeString": "tuple()"
+                      }
+                    },
+                    "id": 606,
+                    "nodeType": "ExpressionStatement",
+                    "src": "8003:20:0"
+                  }
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 610,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 608,
+                      "name": "sitisServicePlacemarkert",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 8,
+                      "src": "8033:24:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 609,
+                      "name": "newPlaceMarket",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 596,
+                      "src": "8060:14:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "src": "8033:41:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "id": 611,
+                  "nodeType": "ExpressionStatement",
+                  "src": "8033:41:0"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 613,
+            "implemented": true,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "changePlaceMarket",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 597,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 596,
+                  "name": "newPlaceMarket",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 613,
+                  "src": "7937:22:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 595,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "7937:7:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "7936:24:0"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 598,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "7968:0:0"
+            },
+            "scope": 614,
+            "src": "7910:171:0",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 611,
-        "src": "73:7833:0"
+        "scope": 630,
+        "src": "73:8010:0"
       },
       {
         "baseContracts": [],
@@ -15846,9 +16320,9 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 610,
+        "id": 629,
         "linearizedBaseContracts": [
-          610
+          629
         ],
         "name": "SitisPlaceMarketInt",
         "nodeType": "ContractDefinition",
@@ -15856,7 +16330,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 602,
+            "id": 621,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -15864,16 +16338,16 @@
             "name": "closePurchase",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 598,
+              "id": 617,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 597,
+                  "id": 616,
                   "name": "_purchaseId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 602,
-                  "src": "7987:19:0",
+                  "scope": 621,
+                  "src": "8164:19:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -15881,10 +16355,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 596,
+                    "id": 615,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "7987:7:0",
+                    "src": "8164:7:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -15894,20 +16368,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "7986:21:0"
+              "src": "8163:21:0"
             },
             "payable": false,
             "returnParameters": {
-              "id": 601,
+              "id": 620,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 600,
+                  "id": 619,
                   "name": "result",
                   "nodeType": "VariableDeclaration",
-                  "scope": 602,
-                  "src": "8024:11:0",
+                  "scope": 621,
+                  "src": "8201:11:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -15915,10 +16389,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 599,
+                    "id": 618,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "8024:4:0",
+                    "src": "8201:4:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -15928,10 +16402,10 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "8023:13:0"
+              "src": "8200:13:0"
             },
-            "scope": 610,
-            "src": "7963:74:0",
+            "scope": 629,
+            "src": "8140:74:0",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
@@ -15939,7 +16413,7 @@
           {
             "body": null,
             "documentation": null,
-            "id": 609,
+            "id": 628,
             "implemented": false,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -15947,16 +16421,16 @@
             "name": "cancelService",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 605,
+              "id": 624,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 604,
+                  "id": 623,
                   "name": "_purchaseId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 609,
-                  "src": "8066:19:0",
+                  "scope": 628,
+                  "src": "8243:19:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -15964,10 +16438,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 603,
+                    "id": 622,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "8066:7:0",
+                    "src": "8243:7:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -15977,20 +16451,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "8065:21:0"
+              "src": "8242:21:0"
             },
             "payable": false,
             "returnParameters": {
-              "id": 608,
+              "id": 627,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 607,
+                  "id": 626,
                   "name": "result",
                   "nodeType": "VariableDeclaration",
-                  "scope": 609,
-                  "src": "8103:11:0",
+                  "scope": 628,
+                  "src": "8280:11:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -15998,10 +16472,10 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 606,
+                    "id": 625,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "8103:4:0",
+                    "src": "8280:4:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -16011,20 +16485,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "8102:13:0"
+              "src": "8279:13:0"
             },
-            "scope": 610,
-            "src": "8042:74:0",
+            "scope": 629,
+            "src": "8219:74:0",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 611,
-        "src": "7928:190:0"
+        "scope": 630,
+        "src": "8105:190:0"
       }
     ],
-    "src": "46:8072:0"
+    "src": "46:8249:0"
   },
   "compiler": {
     "name": "solc",
@@ -16032,5 +16506,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.0",
-  "updatedAt": "2018-09-02T03:08:29.869Z"
+  "updatedAt": "2018-11-11T09:58:21.202Z"
 }
